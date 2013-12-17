@@ -11,6 +11,6 @@ x = xy(1:ix.nx);
 y = xy((1:ix.ny)+ix.nx); 
 
 % compute the jacobian
-[~,df_dx,df_dy] = differential_eqs_lk_10_6(t,x,y,ps);
-[~,dg_dx,dg_dy] = algebraic_eqs_lk_8_27(t,x,y,ps);
+[~,df_dx,df_dy] = differential_eqs_lk_perm(t,x,y,ps);
+[~,dg_dx,dg_dy] = algebraic_eqs_lk_perm(t,x,y,ps);
 dfg_dxy = [df_dx df_dy; dg_dx dg_dy;];

@@ -3,7 +3,7 @@ global Load_spline
 % load some data
 
 C = psconstants_will;
-ps = case9_ps_lk_11_21; % get the real one? K SHOULD BE 0.151, CHECK IT
+ps = case9_ps_lk_perm; % get the real one? K SHOULD BE 0.151, CHECK IT
 ps = updateps(ps);
 ps = dcpf(ps); % dc power flow
 tmin=1;
@@ -94,7 +94,7 @@ Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
 
 %% Simulate the steady state
 
-[t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_10_6(ps,[tmin,tmax],0);
+[t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,[tmin,tmax],0);
 
 %% do some plots
 subplot_row = 2;

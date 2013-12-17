@@ -15,14 +15,14 @@ C = psconstants_will;
 
 % check to see if x/y are a valid operating point - SHOULD WE LEAVE THIS IN
 % OR GET RID OF IT SINCE IT ALTERS THE CURRENT POINT
-[g,~,dg_dy] = algebraic_eqs_lk_8_27(0,x0,y0,ps);
+[g,~,dg_dy] = algebraic_eqs_lk_perm(0,x0,y0,ps);
 
 count = 0;
 while any(abs(g)>EPS)
     count = count+1;
     dy = - (dg_dy \ g);
     y0 = y0 + dy;
-    [g,~,dg_dy] = algebraic_eqs_lk_8_27(0,x0,y0,ps);
+    [g,~,dg_dy] = algebraic_eqs_lk_perm(0,x0,y0,ps);
     if count>10
         error('Something funny happened');
     end
@@ -30,18 +30,18 @@ end
 xy0 = [x0;y0];
 
 % set up the differential equations
-fg = @(t,xy) differential_algebraic_eqs_lk_10_6(t,xy,ps);
-dfg_dxy = @(t,xy) dae_jacobian_lk_10_6(t,xy,ps);
+fg = @(t,xy) differential_algebraic_eqs_lk_perm(t,xy,ps);
+dfg_dxy = @(t,xy) dae_jacobian_lk_perm(t,xy,ps);
 
 % test the differential equations around the current point
 %fg0 = fg(0,xy0);
 
 %%
 if check_derivs
-    f_x = @(x)differential_eqs_lk_10_6(0,x,y0,ps);
-    f_y = @(y)differential_eqs_lk_10_6(0,x0,y,ps);
-    g_x = @(x)algebraic_eqs_lk_8_27(0,x,y0,ps);
-    g_y = @(y)algebraic_eqs_lk_8_27(0,x0,y,ps);
+    f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps);
+    f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps);
+    g_x = @(x)algebraic_eqs_lk_perm(0,x,y0,ps);
+    g_y = @(y)algebraic_eqs_lk_perm(0,x0,y,ps);
     [f,df_dx0,df_dy0] = f_y(y0);
     [g,dg_dx0,dg_dy0] = g_x(x0);
     [g,dg_dx0,dg_dy0] = g_y(y0);
