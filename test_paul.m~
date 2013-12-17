@@ -1,0 +1,28 @@
+clear all; close all;
+% load some data
+C  = psconstants;
+ps = case9_ps; % get the real one?
+ps = updateps(ps);
+ps = dcpf(ps); % dc power flow
+ps.mac = get_mac_state(ps,'linear');
+n = size(ps.bus,1);
+ng = size(ps.gen,1);
+ix = get_indices(n,ng);
+[x0,y0] = get_xy(ps);
+t = 0;
+
+y_start = zeros(size(y0));
+
+% choose a line to take out
+br_out = 4;
+% take the branch out
+ps.branch(br_out,C.br.status) = 0;
+% re-build the B bus matrix and solve for the new theta
+ps.B = makeBbus(ps);
+% re-calculate the new y values
+g = @(y) algebraic_only(t,x0,y,ps);
+%checkDerivatives(g,[],y_start)
+y_hat = nrsolve(g,y_start);
+
+
+return
