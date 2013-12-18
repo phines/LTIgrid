@@ -10,7 +10,7 @@ function mac = get_mac_state(ps,mode)
 % the same sequence.
 
 % grab some data
-C  = psconstants;
+C  = psconstants_will;
 Pg = ps.gen(:,C.ge.Pg)/ps.baseMVA;
 Qg = ps.gen(:,C.ge.Qg)/ps.baseMVA;
 G  = ps.bus_i(ps.gen(:,1));

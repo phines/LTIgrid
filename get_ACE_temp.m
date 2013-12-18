@@ -12,7 +12,7 @@ br_x       = ps.branch(br_status,C.br.X);
 M          = ps.mac(:,C.ma.M);
 B          = ps.areas(:,2);
 nA         = length(ps.tie_lines_F);
-ix         = get_indices(n,nmacs);
+ix         = get_indices_will(n,nmacs);
 Pmax       = ps.gen(:,C.ge.Pmax);
 
 % figure out which area each generator is in

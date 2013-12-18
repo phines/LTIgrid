@@ -10,7 +10,7 @@ if nargin<3, load_shedding=false; end
 verbose = false;
 
 % some constants
-C = psconstants;
+C = psconstants_will;
 ps = updateps(ps);
 EPS = 1e-6;
 

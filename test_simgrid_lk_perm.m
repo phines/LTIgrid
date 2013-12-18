@@ -16,45 +16,45 @@ ps = find_areas(ps);
 % prepare the machine state variables
 ps.mac = get_mac_state(ps,'linear');
 
-%% spline some fabricated load data
-initial_load     = ps.shunt(:,C.sh.P);
-load_points      = initial_load';
-load_noise_scale = 2; %see what changing this does
-for i=1:(tmax-1)
-    load_points(i+1,:)=load_points(i,:)+load_noise_scale*randn(1,3);
-end
-
-time = 1:tmax;
-Load_spline1  = spline(time,load_points(:,1));
-Load_spline2  = spline(time,load_points(:,2)); %%unhardcode - number of loads should be naturally chosen 
-Load_spline3  = spline(time,load_points(:,3)); %%be sure to unhardcode subfunction (algebraic_lk.. as well)
-Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
-
-max_load = (max(load_points));
-max_load_area_1 = max_load(3);
-max_load_area_2 = max_load(1)+max_load(2);
-ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
-
-%% spline spline fabricated load data (light mrrw)
-
-initial_load = ps.shunt(:,C.sh.P);
-load_points  = zeros(60,3);
-var_light    = zeros(3,1);
-std_light    = zeros(3,1);
-
-for i=1:length(initial_load)
-   lp = mrrw(60,.01,10,1,1);
-   load_points(:,i) = lp*(initial_load(i)/10); %hardcoded for ten in mrrw to be same value we divide by
-   var_light(i)     = var(load_points(:,i));
-   std_light(i)     = std(load_points(:,i));
-end
-
-time = 1:tmax;
-Load_spline1  = spline(time,load_points(:,1));
-Load_spline2  = spline(time,load_points(:,2)); %%unhardcode - number of loads should be naturally chosen 
-Load_spline3  = spline(time,load_points(:,3)); %%be sure to unhardcode subfunction (algebraic_lk.. as well)
-Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
-
+% %% spline some fabricated load data
+% initial_load     = ps.shunt(:,C.sh.P);
+% load_points      = initial_load';
+% load_noise_scale = 2; %see what changing this does
+% for i=1:(tmax-1)
+%     load_points(i+1,:)=load_points(i,:)+load_noise_scale*randn(1,3);
+% end
+% 
+% time = 1:tmax;
+% Load_spline1  = spline(time,load_points(:,1));
+% Load_spline2  = spline(time,load_points(:,2)); %%unhardcode - number of loads should be naturally chosen 
+% Load_spline3  = spline(time,load_points(:,3)); %%be sure to unhardcode subfunction (algebraic_lk.. as well)
+% Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
+% 
+% max_load = (max(load_points));
+% max_load_area_1 = max_load(3);
+% max_load_area_2 = max_load(1)+max_load(2);
+% ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
+% 
+% %% spline spline fabricated load data (light mrrw)
+% 
+% initial_load = ps.shunt(:,C.sh.P);
+% load_points  = zeros(60,3);
+% var_light    = zeros(3,1);
+% std_light    = zeros(3,1);
+% 
+% for i=1:length(initial_load)
+%    lp = mrrw(60,.01,10,1,1);
+%    load_points(:,i) = lp*(initial_load(i)/10); %hardcoded for ten in mrrw to be same value we divide by
+%    var_light(i)     = var(load_points(:,i));
+%    std_light(i)     = std(load_points(:,i));
+% end
+% 
+% time = 1:tmax;
+% Load_spline1  = spline(time,load_points(:,1));
+% Load_spline2  = spline(time,load_points(:,2)); %%unhardcode - number of loads should be naturally chosen 
+% Load_spline3  = spline(time,load_points(:,3)); %%be sure to unhardcode subfunction (algebraic_lk.. as well)
+% Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
+% 
 %% spline spline fabricated load data (strong mrrw)
 % 
 % initial_load  = ps.shunt(:,C.sh.P);
@@ -75,22 +75,22 @@ Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
 % Load_spline3  = spline(time,load_points(:,3)); %%be sure to unhardcode subfunction (algebraic_lk.. as well)
 % Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
 
- %% spline the other style of load
-% initial_load     = ps.shunt(:,C.sh.P);
-% load_change      = ps.shunt(:,C.sh.P).*[1.005;1;1];
-% load = [repmat(initial_load,1,tmax/3), repmat(load_change,1,2*tmax/3)];%,repmat(initial_load,1,tmax/3)];
-% load = load';
-% 
-% time = 1:tmax;
-% Load_spline1  = spline(time,load(:,1));
-% Load_spline2  = spline(time,load(:,2)); %%unhardcode - number of loads should be naturally chosen 
-% Load_spline3  = spline(time,load(:,3)); %%be sure to unhardcode subfunction (algebraic_lk.. as well)
-% Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
-% 
-% max_load = (max(load));
-% max_load_area_1 = max_load(3);
-% max_load_area_2 = max_load(1)+max_load(2);
-% ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
+%% spline the other style of load
+initial_load     = ps.shunt(:,C.sh.P);
+load_change      = ps.shunt(:,C.sh.P).*[1.005;1;1];
+load = [repmat(initial_load,1,tmax/3), repmat(load_change,1,2*tmax/3)];%,repmat(initial_load,1,tmax/3)];
+load = load';
+
+time = 1:tmax;
+Load_spline1  = spline(time,load(:,1));
+Load_spline2  = spline(time,load(:,2)); %%unhardcode - number of loads should be naturally chosen 
+Load_spline3  = spline(time,load(:,3)); %%be sure to unhardcode subfunction (algebraic_lk.. as well)
+Load_spline   = [Load_spline1;Load_spline2;Load_spline3];
+
+max_load = (max(load));
+max_load_area_1 = max_load(3);
+max_load_area_2 = max_load(1)+max_load(2);
+ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
 
 %% Simulate the steady state
 

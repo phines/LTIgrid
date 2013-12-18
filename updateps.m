@@ -2,7 +2,7 @@ function ps = updateps(ps)
 % check for and fix irregular data in a power system data structure
 % see "psconstants" for a description of this structure
 
-C = psconstants;
+C = psconstants_will;
 
 %% make sure that the matrices are big enough
 % bus

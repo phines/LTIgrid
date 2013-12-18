@@ -1,7 +1,7 @@
 function ps = find_areas(ps)
 % usage: ps = find_areas(ps)
 
-C = psconstants;
+C = psconstants_will;
 area_nos = ps.bus(:,C.bu.area);
 F = ps.bus_i(ps.branch(:,1));
 T = ps.bus_i(ps.branch(:,2));
