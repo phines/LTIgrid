@@ -50,14 +50,14 @@ ps.mac = [...
  2 0 0.8958 0.1198 0 0 0 0 0 12.8 1.2 0 0 0 omega_0 0 0 0 0 0 1.2 0 0.05;
  3 0 1.3125 0.1813 0 0 0 0 0 6.02 1.2 0 0 0 omega_0 0 0 0 0 0  1 0 0.05;    
 ];
-ps.mac(:,6:8) = ps.mac(:,3:5)*0.8; %what does this do?
+ps.mac(:,6:8) = ps.mac(:,3:5)*0.8;
 % set the damping constant for the machines
 M = ps.mac(:,10);
 ps.mac(:,9) =  M/2;
 
 ps.areas = [...
- 0.151 5;
- 0.151 5;
+ 0.351 5;
+ 0.351 5;
 ];
 
 ps.gencost = [...

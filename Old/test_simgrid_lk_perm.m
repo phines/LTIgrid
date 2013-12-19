@@ -17,7 +17,7 @@ ps = find_areas(ps);
 ps.mac = get_mac_state(ps,'linear');
 
 %% form the load
-[Load_spline,ps] = Load_Type(4,ps,tmax);
+[Load_spline, ps] = Load_Type(4,ps,tmax);
 
 %% Simulate the steady state
 [t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,[tmin,tmax],0);
