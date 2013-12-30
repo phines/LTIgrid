@@ -45,12 +45,13 @@ ps.shunt = [...
 ];
 
 ps.mac = [...
-%gen r Xd Xdp Xdpp Xq Xqp Xqpp D M Ea Eap Pm delta omega UPDATE VARIABLE NAMES FOR 0'S Tg R
+%gen r Xd Xdp Xdpp Xq Xqp Xqpp D M Ea Eap Pm delta omega P1 delta bus time label  Tg Tt k R Pc 
  1 0 0.1460 0.0608 0 0 0 0 0 47.28 1.2 0 0 0 omega_0 0 0 0 0 0 1 0 0.05; %added Tg values and R values
  2 0 0.8958 0.1198 0 0 0 0 0 12.8 1.2 0 0 0 omega_0 0 0 0 0 0 1.2 0 0.05;
  3 0 1.3125 0.1813 0 0 0 0 0 6.02 1.2 0 0 0 omega_0 0 0 0 0 0  1 0 0.05;    
 ];
 ps.mac(:,6:8) = ps.mac(:,3:5)*0.8; %what does this do?
+
 % set the damping constant for the machines
 M = ps.mac(:,10);
 ps.mac(:,9) =  M/2;

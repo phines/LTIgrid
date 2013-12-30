@@ -13,8 +13,20 @@ nmacs = size(ps.gen,1);
 n = size(ps.bus,1);
 ix = get_indices_will(n,nmacs); % index to help us find stuff
 ps = find_areas(ps);
+
+% Determine Reg. from E.D.
+initial_load = ps.shunt(:,C.sh.P);
+cd('Trial opf\')
+[ps,Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,sum(initial_load));
+cd ../
 % prepare the machine state variables
 ps.mac = get_mac_state(ps,'linear');
+
+%% Set limits for Diffeq Limiter
+ps.gen(:,C.ge.reg_ramp_up)   = Rgs_sbs; 
+ps.gen(:,C.ge.reg_ramp_down) = -Rgs_sbs;
+ps.gov(:,C.gov.LCmax)        = ones(nmacs,1); %include the rest of ps.gov?
+ps.gov(:,C.gov.LCmin)        = -ones(nmacs,1);
 
 %% form the load
 [Load_spline,ps] = Load_Type(4,ps,tmax);
