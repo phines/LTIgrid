@@ -69,12 +69,12 @@ elseif Val == 4
     load_points    = load';
     time = 1:tmax;
     
-    for i=1:length(initial_load)
-        Load_spline_check      = spline(time,load_points(:,i));
-        Load_spline_check.area = load_areas(i);
-        Load_spline_check.bus  = initial_load_bus(i);
-        Load_spline2(i,1)       = Load_spline_check;
-    end
+%     for i=1:length(initial_load)
+%         Load_spline_check      = spline(time,load_points(:,i));
+%         Load_spline_check.area = load_areas(i);
+%         Load_spline_check.bus  = initial_load_bus(i);
+%         Load_spline(i,1)       = Load_spline_check;
+%     end
     Load_spline = spline(time,load_points');
     max_load = (max(load));
     max_load_area_1 = max_load(3);
@@ -110,9 +110,9 @@ elseif Val == 6
         else
             load_points(:,i) = initial_load(i)*ones(tmax,1);
         end
-        %Load_spline(i,1)  = spline(time,load_points(:,i));
+        Load_spline(i,1)  = spline(time,load_points(:,i));
     end
-    Load_spline = spline(time,load_points')
+    
 end
 
 end

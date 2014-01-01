@@ -19,11 +19,13 @@ end
 %gencost = ps.gencost;
 %busdata = ps.bus;
 gendata = ps.gen;
-gendata(:,C.ge.ramp_rate_up) = gendata(:,C.ge.Pmax).*[0.3;6;1];%use for case9_ps_lk_perm ONLY, UNHARDCODE, is this right (I think) or should it be reg ramp up?
+%gendata(:,C.ge.ramp_rate_up) = gendata(:,C.ge.Pmax).*[0.3;6;1];%use for case9_ps_lk_perm ONLY, UNHARDCODE, is this right (I think) or should it be reg ramp up?
 
-for i = 1:size(gendata,1)
-PgSS(i,1) = One_Day_Hour_Chunks(1)/size(gendata,1); 
-end
+% for i = 1:size(gendata,1)
+% PgSS(i,1) = One_Day_Hour_Chunks(1)/size(gendata,1); 
+% end
+PgSS = ps.gen(:,C.ge.Pg);
+
 % ADD PSCONSTANTS AND USE
 S_cost  = 1000;
 
