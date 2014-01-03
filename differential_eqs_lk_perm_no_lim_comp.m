@@ -97,7 +97,7 @@ if nargout>1
     dFswing_dPm_values    =  1./M;
     dFPm_dot_dPc_values   = (1./Tg);
     dFPm_dPm_values       = (-1./Tg);
-    dFPm_domega_values    = (-1./R).*(1./Tg)
+    dFPm_domega_values    = (-1./R).*(1./Tg);
 
     [dFPc_domega_values,dFPc_domega_cols,dFPc_domega_rows] = get_dFPc_domega_libby(ps);
     % build df_dx

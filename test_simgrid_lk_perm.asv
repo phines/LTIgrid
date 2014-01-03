@@ -16,6 +16,7 @@ ps = updateps(ps);
 ps.bus(40:end,C.bu.area) = 2;
 ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
 ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
+
 load_buses = ps.bus_i(ps.shunt(:,1));
 bus_areas  = ps.bus(load_buses,C.bu.area);
 
@@ -46,8 +47,9 @@ ps.gov(:,C.gov.LCmin)        = -ones(nmacs,1);
 
 %% form the load
 [Load_spline,ps] = Load_Type(4,ps,tmax);
-tcheck           = 0:tmax;
-ps               = get_ps_areas_libby(ps,bus_areas,load_buses,Load_spline,tcheck);
+%%
+total_load = ppval(Load_spline,0:tmax);  
+ps         = get_ps_areas_libby(ps,bus_areas,load_buses,total_load);
 
 %% Simulate the steady state
 [t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,[tmin,tmax],0);
@@ -110,10 +112,6 @@ ylabel('Pm')
 figure(4);clf;
 %subplot(subplot_row,subplot_col,5)
 plot(t, ppval(Load_spline(1),t),'k')
-hold on
-plot(t, ppval(Load_spline(2),t),'b')
-plot(t, ppval(Load_spline(3),t),'r')
-%plot(t, ppval(Load_spline(3),t)+ppval(Load_spline(2),t)+ppval(Load_spline(1),t),'m')
 axis([tmin tmax -Inf Inf])
 set(gca,'FontSize',fontsize)
 xlabel('Time')

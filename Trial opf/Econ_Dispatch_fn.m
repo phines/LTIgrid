@@ -12,7 +12,6 @@ else
     All_Load            = importdata('load.mat');
     One_Day             = All_Load{133}; %% choose one random day's load
     One_Day_Hour_Chunks = One_Day(1:12:end)*.03; %scaled to fit current Pmax's, 5 min res, so to get 1hr time steps, pull 1st of every 12 points
-    
 end
 
 %% Power System information

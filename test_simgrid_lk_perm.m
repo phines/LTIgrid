@@ -7,15 +7,15 @@ global Load_spline
 
 C = psconstants_will;
 
-ps = case9_ps_lk_perm; % get the real one? K SHOULD BE 0.151, CHECK IT
-ps = updateps(ps);
-
-% ps = case39_ps_will;
-% ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED 
+% ps = case9_ps_lk_perm; % get the real one? K SHOULD BE 0.151, CHECK IT
 % ps = updateps(ps);
-% ps.bus(40:end,C.bu.area) = 2;
-% ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
-% ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
+
+ps = case39_ps_will;
+ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED 
+ps = updateps(ps);
+ps.bus(40:end,C.bu.area) = 2;
+ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
+ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
 
 load_buses = ps.bus_i(ps.shunt(:,1));
 bus_areas  = ps.bus(load_buses,C.bu.area);
@@ -46,7 +46,7 @@ ps.gov(:,C.gov.LCmax)        = ones(nmacs,1); %include the rest of ps.gov?
 ps.gov(:,C.gov.LCmin)        = -ones(nmacs,1);
 
 %% form the load
-[Load_spline,ps] = Load_Type(4,ps,tmax);
+[Load_spline,ps] = Load_Type(2,ps,tmax);
 %%
 total_load = ppval(Load_spline,0:tmax);  
 ps         = get_ps_areas_libby(ps,bus_areas,load_buses,total_load);

@@ -8,10 +8,10 @@ function [Load_spline,ps] = Load_Type(Val,ps,tmax)
 %  will be outside gen limits, area 1 shouldn't be)
 C = psconstants_will;
 initial_load     = ps.shunt(:,C.sh.P);
-[gen_locs,load_locs] = get_locs(ps);
-initial_load_bus = ps.shunt(:,C.sh.bus);
-areas            = ps.bus(:,C.bus.area);
-load_areas       = areas(load_locs==1);
+%[~,load_locs] = get_locs(ps);
+%initial_load_bus = ps.shunt(:,C.sh.bus);
+%areas            = ps.bus(:,C.bus.area);
+%load_areas       = areas(load_locs==1);
 
 if Val == 1
     load_points      = initial_load';
@@ -26,7 +26,7 @@ if Val == 1
 %     Load_spline(i,1) = spline(time,load_points(:,i));
 %     end
     
-    Load_spline = spline(time,load_points')
+    Load_spline = spline(time,load_points');
    
     max_load = (max(load_points));
     max_load_area_1 = max_load(3);
@@ -47,11 +47,11 @@ elseif Val == 2
        std_light(i)      = std(load_points(:,i));
        %Load_spline(i,1)  = spline(time,load_points(:,i));
     end
-    Load_spline = spline(time,load_points')
+    Load_spline = spline(time,load_points');
 elseif Val == 3
-    load_points = zeros(tmax,3);
-    var_strong  = zeros(3,1);
-    std_strong  = zeros(3,1);
+    load_points = zeros(tmax,length(initial_load));
+    var_strong  = zeros(length(initial_load),1);
+    std_strong  = zeros(length(initial_load),1);
     time        = 1:tmax;
  
     for i=1:length(initial_load)
@@ -61,24 +61,20 @@ elseif Val == 3
        std_strong(i)     = std(load_points(:,i));
        %Load_spline(i,1)  = spline(time,load_points(:,i));
     end
-    Load_spline = spline(time,load_points')
+    Load_spline = spline(time,load_points');
 elseif Val == 4
     load_change    = initial_load;
     load_change(1) = load_change(1)*1.005;
     load           = [repmat(initial_load,1,tmax/3), repmat(load_change,1,2*tmax/3)];%,repmat(initial_load,1,tmax/3)];
     load_points    = load';
     time = 1:tmax;
-    
-    for i=1:length(initial_load)
-        Load_spline_check      = spline(time,load_points(:,i));
-        Load_spline_check.area = load_areas(i);
-        Load_spline_check.bus  = initial_load_bus(i);
-        Load_spline2(i,1)       = Load_spline_check;
-    end
     Load_spline = spline(time,load_points');
-    max_load = (max(load));
-    max_load_area_1 = max_load(3);
-    max_load_area_2 = max_load(1)+max_load(2);
+    
+    max_load = (max(load'));
+    max_load_area_1 = max_load(3);%unhardcode!
+    max_load_area_2 = max_load(1)+max_load(2);%unhardcode! 
+    %also, (above) make sure the max of a given time is used, not max of
+    %individual loads added together
     ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
 
 elseif Val == 5
@@ -86,7 +82,7 @@ elseif Val == 5
     var_strong  = zeros(length(initial_load),1);
     std_strong  = zeros(length(initial_load),1);
     time        = 1:tmax;
-    step        = ceil((3*initial_load)/tmax);
+    step        = ceil((2*initial_load)/tmax); %2=random choice by me
     
     for i=1:length(initial_load)
        load_points(:,i)  = initial_load(i):step(i):initial_load(i)+step(i)*(tmax-1);
@@ -94,7 +90,7 @@ elseif Val == 5
        std_strong(i)     = std(load_points(:,i));
        %Load_spline(i,1)  = spline(time,load_points(:,i));
     end
-    Load_spline = spline(time,load_points')
+    Load_spline = spline(time,load_points');
 elseif Val == 6
     load_points = zeros(tmax,length(initial_load));
     var_strong  = zeros(length(initial_load),1);
@@ -112,7 +108,7 @@ elseif Val == 6
         end
         %Load_spline(i,1)  = spline(time,load_points(:,i));
     end
-    Load_spline = spline(time,load_points')
+    Load_spline = spline(time,load_points');
 end
 
 end
