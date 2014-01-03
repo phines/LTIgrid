@@ -15,14 +15,9 @@ else
 end
 
 %% Power System information
-%gencost = ps.gencost;
-%busdata = ps.bus;
-gendata = ps.gen;
-%gendata(:,C.ge.ramp_rate_up) = gendata(:,C.ge.Pmax).*[0.3;6;1];%use for case9_ps_lk_perm ONLY, UNHARDCODE, is this right (I think) or should it be reg ramp up?
 
-% for i = 1:size(gendata,1)
-% PgSS(i,1) = One_Day_Hour_Chunks(1)/size(gendata,1); 
-% end
+gendata = ps.gen;
+
 PgSS = ps.gen(:,C.ge.Pg);
 
 % ADD PSCONSTANTS AND USE
@@ -40,6 +35,7 @@ RRd            = -RRu;
 RRreg          = RRu; %is this right?
 reg_cost       = ones(num_gens,1);%will had cost=1, unhardcode
 reg_total      = 0.01*One_Day_Hour_Chunks; %make the %reg specifiable as input
+
 %% Setup inputs
 c  = zeros((2*num_gens+2)*num_time_steps,1); % that length b/c x is of the form Pg1(k=1);Pg2(k=1);S+(k=1);S-(k=1);Pg1(k=2);Pg2(k=2);...Pg1(k=end);Pg2(k=end);S+(k=end);S-(k=end), and c, lb, and ub must be of the same length
 lb = zeros((2*num_gens+2)*num_time_steps,1);

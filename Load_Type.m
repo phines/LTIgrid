@@ -8,10 +8,6 @@ function [Load_spline,ps] = Load_Type(Val,ps,tmax)
 %  will be outside gen limits, area 1 shouldn't be)
 C = psconstants_will;
 initial_load     = ps.shunt(:,C.sh.P);
-%[~,load_locs] = get_locs(ps);
-%initial_load_bus = ps.shunt(:,C.sh.bus);
-%areas            = ps.bus(:,C.bus.area);
-%load_areas       = areas(load_locs==1);
 
 if Val == 1
     load_points      = initial_load';
@@ -21,11 +17,6 @@ if Val == 1
     end
 
     time = 1:tmax;
-%     for i=1:length(initial_load)
-%         
-%     Load_spline(i,1) = spline(time,load_points(:,i));
-%     end
-    
     Load_spline = spline(time,load_points');
    
     max_load = (max(load_points));
@@ -45,7 +36,6 @@ elseif Val == 2
        load_points(:,i)  = lp*(initial_load(i)/10); %hardcoded for ten in mrrw to be same value we divide by
        var_light(i)      = var(load_points(:,i));
        std_light(i)      = std(load_points(:,i));
-       %Load_spline(i,1)  = spline(time,load_points(:,i));
     end
     Load_spline = spline(time,load_points');
 elseif Val == 3
@@ -59,7 +49,6 @@ elseif Val == 3
        load_points(:,i)  = lp*(initial_load(i)/10); %hardcoded for ten in mrrw to be same value we divide by
        var_strong(i)     = var(load_points(:,i));
        std_strong(i)     = std(load_points(:,i));
-       %Load_spline(i,1)  = spline(time,load_points(:,i));
     end
     Load_spline = spline(time,load_points');
 elseif Val == 4
@@ -88,7 +77,6 @@ elseif Val == 5
        load_points(:,i)  = initial_load(i):step(i):initial_load(i)+step(i)*(tmax-1);
        var_strong(i)     = var(load_points(:,i));
        std_strong(i)     = std(load_points(:,i));
-       %Load_spline(i,1)  = spline(time,load_points(:,i));
     end
     Load_spline = spline(time,load_points');
 elseif Val == 6
@@ -106,7 +94,6 @@ elseif Val == 6
         else
             load_points(:,i) = initial_load(i)*ones(tmax,1);
         end
-        %Load_spline(i,1)  = spline(time,load_points(:,i));
     end
     Load_spline = spline(time,load_points');
 end

@@ -83,11 +83,6 @@ f(ix.f.omega_dot) = (Pm - Pg - D.*(omega_pu-1))./M;
 f(ix.f.Pm_dot)    = Pm_dot;
 f(ix.f.Pc_dot)    = Pc_dot;
 
-%DEBUG
-%t
-%disp([Pm Pg  D.*(omega_pu-1) M delta theta_mac delta_m])
-
-
 % output df_dx if requested
 if nargout>1
     % compute the values

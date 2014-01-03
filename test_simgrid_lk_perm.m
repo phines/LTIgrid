@@ -46,7 +46,7 @@ ps.gov(:,C.gov.LCmax)        = ones(nmacs,1); %include the rest of ps.gov?
 ps.gov(:,C.gov.LCmin)        = -ones(nmacs,1);
 
 %% form the load
-[Load_spline,ps] = Load_Type(2,ps,tmax);
+[Load_spline,ps] = Load_Type(4,ps,tmax);
 %%
 total_load = ppval(Load_spline,0:tmax);  
 ps         = get_ps_areas_libby(ps,bus_areas,load_buses,total_load);
