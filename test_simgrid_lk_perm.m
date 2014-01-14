@@ -7,15 +7,15 @@ global Load_spline
 
 C = psconstants_will;
 
-% ps = case9_ps_lk_perm; % get the real one? K SHOULD BE 0.151, CHECK IT
-% ps = updateps(ps);
-
-ps = case39_ps_will;
-ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED 
+ps = case9_ps_lk_perm; % get the real one? K SHOULD BE 0.151, CHECK IT
 ps = updateps(ps);
-ps.bus(40:end,C.bu.area) = 2;
-ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
-ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
+
+% ps = case39_ps_will;
+% ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED 
+% ps = updateps(ps);
+% ps.bus(40:end,C.bu.area) = 2;
+% ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
+% ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
 
 load_buses = ps.bus_i(ps.shunt(:,1));
 bus_areas  = ps.bus(load_buses,C.bu.area);
@@ -24,6 +24,7 @@ bus_areas  = ps.bus(load_buses,C.bu.area);
 ps = dcpf(ps); % dc power flow
 tmin=1;
 tmax = tmin+59;
+perc_reg = 1;
 ps0 = ps;
 nmacs = size(ps.gen,1);
 n = size(ps.bus,1);
@@ -33,15 +34,16 @@ ps = set_ramp_rates(ps);
 
 % Determine Reg. from E.D.
 initial_load = ps.shunt(:,C.sh.P);
+initial_load_check = [initial_load,initial_load*1.1,initial_load*1.3,initial_load*1.2];
 cd('Trial opf\')
-[ps,Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,sum(initial_load));
+[ps,Pgs_sbs] = Econ_Dispatch_fn(ps,(initial_load_check),perc_reg);
 cd ../
 % prepare the machine state variables
 ps.mac = get_mac_state(ps,'linear');
 
 %% Set limits for Diffeq Limiter
-ps.gen(:,C.ge.reg_ramp_up)   = Rgs_sbs; 
-ps.gen(:,C.ge.reg_ramp_down) = -Rgs_sbs;
+% ps.gen(:,C.ge.reg_ramp_up)   = Rgs_sbs; 
+% ps.gen(:,C.ge.reg_ramp_down) = -Rgs_sbs;
 ps.gov(:,C.gov.LCmax)        = ones(nmacs,1); %include the rest of ps.gov?
 ps.gov(:,C.gov.LCmin)        = -ones(nmacs,1);
 
