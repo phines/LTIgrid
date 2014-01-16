@@ -16,9 +16,8 @@ ps = find_areas(ps);
 
 % Determine Reg. from E.D.
 initial_load = ps.shunt(:,C.sh.P);
-cd('Trial opf\')
 [ps,Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,sum(initial_load));
-cd ../
+
 % prepare the machine state variables
 ps.mac = get_mac_state(ps,'linear');
 
