@@ -39,13 +39,13 @@ ps.gen = [...
 
 ps.shunt = [...
 %bus P Q frac_S frac_Z status type value 
- 5 125 50 1 0 1 1 1000 0;
- 6 90 30 1 0 1 1 1000 0;
+ 5 125 50 1 0 1 1 1000 0; %125 normally
+ 6  90 30 1 0 1 1 1000 0;
  8 100 35 1 0 1 1 1000 0;
 ];
 
 ps.mac = [...
-%gen r Xd Xdp Xdpp Xq Xqp Xqpp D M Ea Eap Pm delta omega P1 delta bus time label  Tg Tt k R Pc 
+%gen r Xd Xdp Xdpp Xq Xqp Xqpp D M Ea Eap Pm delta omega P1 delta bus time label  Tg Tt k(R) Pc 
  1 0 0.1460 0.0608 0 0 0 0 0 47.28 1.2 0 0 0 omega_0 0 0 0 0 0 1 0 0.05; %added Tg values and R values
  2 0 0.8958 0.1198 0 0 0 0 0 12.8 1.2 0 0 0 omega_0 0 0 0 0 0 1.2 0 0.05;
  3 0 1.3125 0.1813 0 0 0 0 0 6.02 1.2 0 0 0 omega_0 0 0 0 0 0  1 0 0.05;    

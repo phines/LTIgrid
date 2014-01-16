@@ -9,13 +9,9 @@ n         = size(ps.bus,1);
 ng        = size(ps.gen,1);
 mac_bus_i = ps.bus_i(ps.mac(:,1)); % machine bus indices
 Xd        = ps.mac(:,C.ma.Xd); % d axis machine reactance
-%Pd = ps.shunt(:,C.sh.P).*ps.shunt(:,C.sh.factor)./ps.baseMVA; % amount of demand
+%Pd       = ps.shunt(:,C.sh.P).*ps.shunt(:,C.sh.factor)./ps.baseMVA; % amount of demand
 D         = ps.bus_i(ps.shunt(:,1)); % locations of demand
-Pd        = [];
-for i=1:length(D)
-Pd (i)       = (ppval(Load_spline(i),t))/ps.baseMVA; %include stochastic load
-end
-
+Pd        = (ppval(Load_spline,t))/ps.baseMVA;
 
 % get some indices that allow us to keep track of stuff
 ix = get_indices_will(n,ng);

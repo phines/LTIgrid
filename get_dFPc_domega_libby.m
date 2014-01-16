@@ -1,4 +1,4 @@
-function [dFPc_domega_values,dFPc_domega_cols, dFPc_domega_rows] = get_dFPc_domega(ps)
+function [dFPc_domega_values,dFPc_domega_cols, dFPc_domega_rows] = get_dFPc_domega_libby(ps)
 % usage: [dFPc_domega,ix_omega_weighted Pc_dot_weighted] = get_dFPc_domega(ps)
 
 % constants
@@ -7,11 +7,12 @@ nmacs = size(ps.mac,1);
 n     = size(ps.bus,1);
 
 % extract data from ps
-M  = ps.mac(:,C.ma.M); % machine inertia
-B  = ps.areas(:,2);    % frequency bias
-K  = ps.areas(:,1);    % generator participation factor
-nA = length(ps.tie_lines_F); % number of areas
-ix  = get_indices_will(n,nmacs); % some indices to keep track of stuff
+M    = ps.mac(:,C.ma.M); % machine inertia
+B    = ps.areas(:,2);    % frequency bias
+K    = ps.areas(:,1);    % generator participation factor
+nA   = length(ps.tie_lines_F); % number of areas
+ix   = get_indices_will(n,nmacs); % some indices to keep track of stuff
+Pmax = ps.gen(:,C.ge.Pmax);
 
 % figure out which area each generator is in
 gen_bus_i = ps.bus_i(ps.gen(:,1));
@@ -27,8 +28,8 @@ for a = 1:nA
 end
 % setup outputs
 dFPc_domega_values = zeros(nvals,1);
-dFPc_domega_rows   = zeros(nvals,1);
-dFPc_domega_cols   = zeros(nvals,1);
+dFPc_domega_rows   = [];
+dFPc_domega_cols   = [];
 
 % calculate differential valus and jacobian locations
 spot = 0;
@@ -46,15 +47,14 @@ for i = 1:nA
     dFPc_domega = dPc_ddelta_omega;
     omega_cols = ix.x.omega_pu(gen_subset);
     Pc_rows    = ix.x.delta_Pc(gen_subset);
+    [~,Pmax_sub_ind] = max(Pmax(gen_subset));
     for k = 1:nmacs_area
-        ix_nvals = (1:nmacs_area) + nmacs_area*(k-1) + sum(gen_subset).^2*(i-1);
         spot=spot+1;
         dFPc_domega_values(spot) = dFPc_domega;
-        dFPc_domega_rows(ix_nvals)   = Pc_rows;
-        dFPc_domega_cols(ix_nvals)   = omega_cols;
-     end
+    end
+   
+    omega_cols = repmat(omega_cols(Pmax_sub_ind),1,length(omega_cols));
+    dFPc_domega_rows   = vertcat(dFPc_domega_rows,Pc_rows');
+    dFPc_domega_cols   = vertcat(dFPc_domega_cols,omega_cols');
+    
 end
-dFPc_domega_rows = sort(dFPc_domega_rows);
-
-dFPc_domega_rows = [11;12;10];
-dFPc_domega_cols = [5;5;4];%unhardcode!!!
