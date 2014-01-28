@@ -10,18 +10,18 @@ C = psconstants_will;
 ps = case9_ps_lk_perm; % get the real one? K SHOULD BE 0.151, CHECK IT
 ps = updateps(ps);
 
-% ps = case39_ps_will;
-% ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED 
-% ps = updateps(ps);
-% ps.bus(40:end,C.bu.area) = 2;
-% ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
-% ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
+ps = case39_ps_will;
+ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED 
+ps = updateps(ps);
+ps.bus(40:end,C.bu.area) = 2;
+ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
+ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
 
 load_buses = ps.bus_i(ps.shunt(:,1));
 bus_areas  = ps.bus(load_buses,C.bu.area);
 
 
-ps = dcpf(ps); % dc power flow
+%ps = dcpf(ps); % dc power flow
 tmin=1;
 tmax = tmin+59;
 perc_reg = 1;
@@ -33,18 +33,15 @@ ps = find_areas(ps);
 ps = set_ramp_rates(ps);
 
 % Determine Reg. from E.D.
-initial_load = ps.shunt(:,C.sh.P);
-<<<<<<< HEAD
-[ps,Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,sum(initial_load));
+initial_load      = ps.shunt(:,C.sh.P);
+%timestep_check    = [initial_load,initial_load*1.2,initial_load*0.8, initial_load*0.7];
+[Pgs_sbs]         = Econ_Dispatch_fn(ps,(initial_load),perc_reg); 
+ps.gen(:,C.ge.Pg) = Pgs_sbs %Use first time step's optimized Pg's for 
+ps                = dcpf(ps)
 
-=======
-initial_load_check = [initial_load,initial_load*1.1,initial_load*1.3,initial_load*1.2];
-cd('Trial opf\')
-[ps,Pgs_sbs] = Econ_Dispatch_fn(ps,(initial_load_check),perc_reg);
-cd ../
->>>>>>> a4ad524c08e8f2605662566b3b04838436f4eb91
 % prepare the machine state variables
 ps.mac = get_mac_state(ps,'linear');
+
 
 %% Set limits for Diffeq Limiter
 % ps.gen(:,C.ge.reg_ramp_up)   = Rgs_sbs; 
@@ -57,6 +54,8 @@ ps.gov(:,C.gov.LCmin)        = -ones(nmacs,1);
 %%
 total_load = ppval(Load_spline,0:tmax);  
 ps         = get_ps_areas_libby(ps,bus_areas,load_buses,total_load);
+
+
 
 %% Simulate the steady state
 [t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,[tmin,tmax],0);
@@ -73,6 +72,7 @@ axis([tmin tmax -Inf Inf])
 set(gca,'FontSize',fontsize)
 xlabel('Time')
 ylabel('Delta')
+title(['K = ',num2str(ps.areas(1,1))])
 
 
 %figure(2);clf;

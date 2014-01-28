@@ -14,12 +14,21 @@ function [f,df_dx,df_dy] = differential_eqs_lk_perm(t,x,y,ps,opt)
 %   f(3) -> dPm_dt
 %   f(4) -> dPc_dt
 
+
+
+
+
+
 %keyboard
 % constants
 C     = psconstants_will;
 nmacs = size(ps.mac,1);
 n     = size(ps.bus,1);
 ix    = get_indices_will(n,nmacs);
+
+
+
+
 
 % extract data from ps
 Xd        = ps.mac(:,C.ma.Xd);
@@ -75,6 +84,12 @@ Pc = Pref + delta_Pc_lim - (omega_pu-1)./R;                % droop and ACE Contr
 Pm_dot_nolim  = (Pc_lim-Pm)./Tg;                                % governor time constant
 [dPm_dPm1,Pm_dot] = limiter_cosmic(Pm_dot_nolim,LCmax,LCmin);       % rate limiter
 % is dPm_dPm1 really dPmdot_dPmdot_nolim?
+
+%Check diff
+Pg_     = ps.gen(:,C.ge.Pg)/ps.baseMVA;
+Pm_     = x(ix.x.Pm);
+Diff   = Pg_-Pm_;
+
 
 % build the output
 f = zeros(ix.nf,1);

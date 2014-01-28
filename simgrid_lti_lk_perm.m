@@ -12,22 +12,23 @@ C = psconstants_will;
 [x0,y0] = get_xy_will(ps); % get the state of everything at the current operating point
 
 
-
 % check to see if x/y are a valid operating point - SHOULD WE LEAVE THIS IN
 % OR GET RID OF IT SINCE IT ALTERS THE CURRENT POINT
-[g,~,dg_dy] = algebraic_eqs_lk_perm(0,x0,y0,ps);
-
-count = 0;
-while any(abs(g)>EPS)
-    count = count+1;
-    dy = - (dg_dy \ g);
-    y0 = y0 + dy;
-    [g,~,dg_dy] = algebraic_eqs_lk_perm(0,x0,y0,ps);
-    if count>10
-        error('Something funny happened');
-    end
-end
+% [g,~,dg_dy] = algebraic_eqs_lk_perm(0,x0,y0,ps);
+% 
+% count = 0;
+% while any(abs(g)>EPS)
+%     count = count+1;
+%     dy = - (dg_dy \ g);
+%     y0 = y0 + dy;
+%     [g,~,dg_dy] = algebraic_eqs_lk_perm(0,x0,y0,ps);
+%     if count>10
+%         error('Something funny happened');
+%     end
+% end
 xy0 = [x0;y0];
+
+
 
 % set up the differential equations
 fg = @(t,xy) differential_algebraic_eqs_lk_perm(t,xy,ps);
@@ -35,6 +36,7 @@ dfg_dxy = @(t,xy) dae_jacobian_lk_perm(t,xy,ps);
 
 % test the differential equations around the current point
 %fg0 = fg(0,xy0);
+
 
 %%
 if check_derivs
@@ -45,6 +47,7 @@ if check_derivs
     [f,df_dx0,df_dy0] = f_y(y0);
     [g,dg_dx0,dg_dy0] = g_x(x0);
     [g,dg_dx0,dg_dy0] = g_y(y0);
+    stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0);
     checkDerivatives(g_y, dg_dy0,y0);
     keyboard 
     return

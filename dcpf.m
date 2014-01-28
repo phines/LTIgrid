@@ -141,6 +141,7 @@ ps.shunt(:,C.sh.factor) = sf;
 % record the B matrix
 ps.B = B;
 
+
 % check for imbalance
 imbalance = sum(ps.gen(:,C.ge.P).*ps.gen(:,C.ge.status)) - sum(ps.shunt(:,C.sh.P).*ps.shunt(:,C.sh.factor));
 if abs(imbalance)>1e-3
