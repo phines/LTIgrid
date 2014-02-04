@@ -17,9 +17,14 @@ y = xy((1:ix.ny)+ix.nx);
 
 % calculate the derivatives if needed:
 if nargin==1 % just calculate the values
-    f = differential_eqs_lk_perm(t,x,y,ps,opt);
-    g = algebraic_eqs_lk_perm(t,x,y,ps,opt);
+%     f = differential_eqs_lk_perm(t,x,y,ps,opt);
+%     g = algebraic_eqs_lk_perm(t,x,y,ps,opt);
+%     fg = [f;g];
+    [f,df_dx,df_dy] = differential_eqs_lk_perm(t,x,y,ps,opt);
+    [g,dg_dx,dg_dy] = algebraic_eqs_lk_perm(t,x,y,ps,opt);
     fg = [f;g];
+    dfg_dxy = [df_dx df_dy;
+               dg_dx dg_dy;];
 else % calculate the values and the derivatives
     [f,df_dx,df_dy] = differential_eqs_lk_perm(t,x,y,ps,opt);
     [g,dg_dx,dg_dy] = algebraic_eqs_lk_perm(t,x,y,ps,opt);

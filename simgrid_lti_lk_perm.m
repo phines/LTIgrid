@@ -1,4 +1,4 @@
-function [t,theta,delta,omega,Pm,ps] = simgrid_lti(ps,tspan,check_derivs)
+function [t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,tspan,check_stab)
 % NOTE THAT THIS FUNCTION IS NOT WORKING YET...
 EPS = 1e-6;
 
@@ -39,7 +39,7 @@ dfg_dxy = @(t,xy) dae_jacobian_lk_perm(t,xy,ps);
 
 
 %%
-if check_derivs
+if check_stab
     f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps);
     f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps);
     g_x = @(x)algebraic_eqs_lk_perm(0,x,y0,ps);
@@ -47,10 +47,10 @@ if check_derivs
     [f,df_dx0,df_dy0] = f_y(y0);
     [g,dg_dx0,dg_dy0] = g_x(x0);
     [g,dg_dx0,dg_dy0] = g_y(y0);
-    stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0);
-    checkDerivatives(g_y, dg_dy0,y0);
-    keyboard 
-    return
+    k=ps.areas(1,1)
+    [max_real_evals_full,num_pos_evals]=stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0);
+    %checkDerivatives(g_y, dg_dy0,y0);
+    
    
 end
 

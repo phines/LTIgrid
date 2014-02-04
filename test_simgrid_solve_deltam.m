@@ -132,3 +132,11 @@ set(gca,'FontSize',fontsize)
 xlabel('Time')
 ylabel('Load')
 
+figure(6);clf;
+plot(t,omega);
+axis([tmin tmax -Inf Inf])
+set(gca,'FontSize',fontsize)
+xlabel('Time')
+ylabel('Omega')
+title(['K = ',num2str(ps.areas(1,1))])
+ylim([376.986,376.992])
