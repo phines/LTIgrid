@@ -13,13 +13,13 @@ ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED
 ps = updateps(ps);
 
 ps.bus(40:end,C.bu.area) = 2;
-ps.gov(:,C.gov.R)        = ps.gen(:,C.ge.Pmax).*0.05/ps.baseMVA % reg constant is 5% of Pmax p.u. instead of 5% of value multiplied by
 ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
 ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
 
 load_buses = ps.bus_i(ps.shunt(:,1));
 bus_areas  = ps.bus(load_buses,C.bu.area);
 
+ps.
 
 %% Set up long term
 tmin = 0;

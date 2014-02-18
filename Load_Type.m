@@ -1,9 +1,9 @@
-function [Load_spline,ps] = Load_Type(Val,ps,tmax)
+function [Load_spline,ps] = Load_Type(Val,ps,tmax,bus_areas)
 %Load_Type forms a load for trial with sim_grid
 %  For Val=1, a random load profile is created
 %  For Val=2, a random load profile is created using a "light" mean reverting random walk
 %  For Val=3, a random load profile is created using a "strong" mean reverting random walk
-%  For Val=4, a simple load profile is created where one of the 3 total loads is increase by 0.5% and then decreased back to the original
+%  For Val=4, a simple load profile is created where one of the loads is increase by 0.5% and then decreased back to the original
 %  For Val=5, a load profile is created in which each of the three loads is brought to greater than one of the generator gen limits (thus area 2
 %  will be outside gen limits, area 1 shouldn't be)
 C = psconstants_will;
@@ -20,8 +20,8 @@ if Val == 1
     Load_spline = spline(time,load_points');
    
     max_load = (max(load_points));
-    max_load_area_1 = max_load(3);
-    max_load_area_2 = max_load(1)+max_load(2);
+    max_load_area_1 = sum(max_load(bus_areas==1));
+    max_load_area_2 = sum(max_load(bus_areas==2));
     ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
     %should the above line be everywhere?
     
@@ -54,14 +54,14 @@ elseif Val == 3
 elseif Val == 4
     load_change    = initial_load;
     load_change(1) = load_change(1)*1.005;
-    load           = [repmat(initial_load,1,tmax/3), repmat(load_change,1,2*tmax/3)];%,repmat(initial_load,1,tmax/3)];
+    load           = [repmat(initial_load,1,floor(tmax/3)), repmat(load_change,1,ceil(2*tmax/3))];%,repmat(initial_load,1,tmax/3)];
     load_points    = load';
     time = 1:tmax;
     Load_spline = spline(time,load_points');
     
     max_load = (max(load'));
-    max_load_area_1 = max_load(3);%unhardcode!
-    max_load_area_2 = max_load(1)+max_load(2);%unhardcode! 
+    max_load_area_1 = sum(max_load(bus_areas==1));
+    max_load_area_2 = sum(max_load(bus_areas==2));
     %also, (above) make sure the max of a given time is used, not max of
     %individual loads added together
     ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];

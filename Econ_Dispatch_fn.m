@@ -1,4 +1,4 @@
-function [Pgs_sbs] = Econ_Dispatch_fn(ps,Load,perc_reg)
+function [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,Load,perc_reg)
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
  
@@ -27,7 +27,7 @@ gen_areas            = areas(gen_locs==1);
 num_time_steps       = size(One_Day_Hour_Chunks,2);
 num_gens             = size(gen_areas,1);
 Pgs_sbs              = zeros(num_gens,num_time_steps);
-
+Rgs_sbs              = zeros(num_gens,num_time_steps);
 %% Useful definitions
 %look at how will does indexing
 
@@ -40,9 +40,8 @@ for j=1:num_areas
     RRd            = -RRu;
     load_in_area   = One_Day_Hour_Chunks(load_areas==j,:); %how to take care of stochastic load here..?
     load_area_sum  = sum(load_in_area,1);  
-    reg_scheduled  = load_area_sum*reg_frac; %1% of load/area or 1% of total load
-    reg_per_gen    = reg_scheduled/num_gens_area;
-%make reg_total/one_day_hr_chunks based on loads/area
+    reg_scheduled  = load_area_sum*reg_frac; 
+    reg_per_gen    = reg_scheduled/num_gens_area; %better way to do than divide evenly?
     
 %% Setup inputs
     c  = zeros((num_gens_area+2)*num_time_steps,1); % that length b/c x is of the form Pg1(k=1);Pg2(k=1);S+(k=1);S-(k=1);Pg1(k=2);Pg2(k=2);...Pg1(k=end);Pg2(k=end);S+(k=end);S-(k=end), and c, lb, and ub must be of the same length
@@ -96,7 +95,8 @@ for j=1:num_areas
     loc       = find(gen_areas==j);
     
     for i=1:num_gens_area
-       Pgs_sbs(loc(i),:) = Pgs(i:num_gens_area+2:end); 
+       Pgs_sbs(loc(i),:) = Pgs(i:num_gens_area+2:end);
+       Rgs_sbs(loc(i),:) = reg_per_gen;
     end
 
     S_plus = Pgs(num_gens_area+1:num_gens_area+2:end);
@@ -104,14 +104,14 @@ for j=1:num_areas
 
     %cmap = hsv(num_gens_area); 
 
-    figure(1);clf;
-    hold on
-    plot(One_Day_Hour_Chunks,'ko')
-    legend_str{1} = 'Load';
-    plot(sum(Pgs_sbs,2),'b')
-    legend_str{2} = 'Pgsum';
-    plot(S_plus,'rx')
-    legend_str{3} = 'S Plus';
+%     figure(1);clf;
+%     hold on
+%     plot(One_Day_Hour_Chunks,'ko')
+%     legend_str{1} = 'Load';
+%     plot(sum(Pgs_sbs,2),'b')
+%     legend_str{2} = 'Pgsum';
+%     plot(S_plus,'rx')
+%     legend_str{3} = 'S Plus';
     %symbols = ['.' 'x' '+' '*' 's' 'd' '^'];
 
 %     m=0;

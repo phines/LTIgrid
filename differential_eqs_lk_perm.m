@@ -85,12 +85,6 @@ Pm_dot_nolim  = (Pc_lim-Pm)./Tg;                                % governor time 
 [dPm_dPm1,Pm_dot] = limiter_cosmic(Pm_dot_nolim,LCmax,LCmin);       % rate limiter
 % is dPm_dPm1 really dPmdot_dPmdot_nolim?
 
-%Check diff
-Pg_     = ps.gen(:,C.ge.Pg)/ps.baseMVA;
-Pm_     = x(ix.x.Pm);
-Diff   = Pg_-Pm_;
-
-
 % build the output
 f = zeros(ix.nf,1);
 f(ix.f.delta_dot) = omega_0.*delta_omega_pu;

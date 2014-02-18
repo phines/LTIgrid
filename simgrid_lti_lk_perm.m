@@ -38,7 +38,7 @@ dfg_dxy = @(t,xy) dae_jacobian_lk_perm(t,xy,ps);
 %fg0 = fg(0,xy0);
 
 
-%%
+%% Checkpoint
 if check_stab
     f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps);
     f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps);
@@ -50,11 +50,9 @@ if check_stab
     k=ps.areas(1,1)
     [max_real_evals_full,num_pos_evals]=stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0);
     %checkDerivatives(g_y, dg_dy0,y0);
-    
-   
 end
 
-
+%% ODE
 % set options for the ODE solver
 mass_mat = sparse(1:ix.nx,1:ix.nx,1,ix.nx+ix.ny,ix.nx+ix.ny);
 odeopts = odeset('Mass',mass_mat,...
