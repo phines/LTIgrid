@@ -41,7 +41,9 @@ for j=1:num_areas
     load_in_area   = One_Day_Hour_Chunks(load_areas==j,:); %how to take care of stochastic load here..?
     load_area_sum  = sum(load_in_area,1);  
     reg_scheduled  = load_area_sum*reg_frac; 
-    reg_per_gen    = reg_scheduled/num_gens_area; %better way to do than divide evenly?
+    percent_pmax   = Pmax/sum(Pmax);
+    reg_per_gen    = percent_pmax*reg_scheduled;
+    %reg_per_gen    = reg_scheduled/num_gens_area; %better way to do than divide evenly?
     
 %% Setup inputs
     c  = zeros((num_gens_area+2)*num_time_steps,1); % that length b/c x is of the form Pg1(k=1);Pg2(k=1);S+(k=1);S-(k=1);Pg1(k=2);Pg2(k=2);...Pg1(k=end);Pg2(k=end);S+(k=end);S-(k=end), and c, lb, and ub must be of the same length
@@ -96,9 +98,9 @@ for j=1:num_areas
     
     for i=1:num_gens_area
        Pgs_sbs(loc(i),:) = Pgs(i:num_gens_area+2:end);
-       Rgs_sbs(loc(i),:) = reg_per_gen;
     end
 
+    Rgs_sbs(loc,:) = reg_per_gen;
     S_plus = Pgs(num_gens_area+1:num_gens_area+2:end);
     S_minus = Pgs(num_gens_area+2:num_gens_area+2:end);
 

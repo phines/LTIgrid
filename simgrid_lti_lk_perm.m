@@ -61,7 +61,7 @@ odeopts = odeset('Mass',mass_mat,...
                  'Jacobian',dfg_dxy);
 
 % solve the ode's
-[t,XY] = ode15s(fg,tspan,xy0,odeopts);
+[t,XY] = ode23t(fg,tspan,xy0,odeopts);
 
 % extract the data from XY
 X = XY(:,1:ix.nx);

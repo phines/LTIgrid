@@ -38,8 +38,8 @@ ps       = set_ramp_rates(ps);
 
 
 %% form the load
-[Load_spline,ps] = Load_Type(4,ps,day_in_s,bus_areas);
-total_load       = ppval(Load_spline,0:fivemin_in_s:day_in_s-fivemin_in_s);  %subtract because don't need load at final moment
+[Load_spline,ps] = Load_Type(6,ps,2*day_in_s,bus_areas);
+total_load       = ppval(Load_spline,0:fivemin_in_s:2*day_in_s-fivemin_in_s);  %subtract because don't need load at final moment
 ps               = get_ps_areas_libby(ps,bus_areas,load_buses,total_load); %is this the right total load? (before total load was for 60 seconds)
 
 
@@ -62,7 +62,7 @@ for i=1:day_in_5min
         % Set up x0/y0 by running one time step of ED to get PGs
         initial_load      = ps.shunt(:,C.sh.P);
         %timestep_check   = [initial_load,initial_load*1.2,initial_load*0.8, initial_load*0.7];
-        [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load,perc_reg); 
+        [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_5min-1),perc_reg); 
         ps.gen(:,C.ge.Pg) = Pgs_sbs(:,1); %Use first time step's optimized Pg's for dcpf
         ps                = dcpf(ps);
 
@@ -70,7 +70,7 @@ for i=1:day_in_5min
         ps.mac = get_mac_state(ps,'linear');
         
     else
-        [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:end),perc_reg); %correct way to do load?
+        [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_5min-1),perc_reg); %load length should stay the same, always looking same distance into future
         ps.gen(:,C.ge.Pg) = Pgs_sbs(:,1);
         
     end
@@ -153,7 +153,7 @@ ylabel('Pm')
 
 figure(4);clf;
 %subplot(subplot_row,subplot_col,5)
-plot(t_all, ppval(Load_spline(1),t),'k')
+plot(t_all, ppval(Load_spline(1),t_all),'k')
 axis([tmin day_in_s -Inf Inf])
 set(gca,'FontSize',fontsize)
 xlabel('Time')
