@@ -38,18 +38,24 @@ ps       = set_ramp_rates(ps);
 
 
 %% form the load
-[Load_spline,ps] = Load_Type(6,ps,2*day_in_s,bus_areas);
+[Load_spline,ps] = Load_Type(4,ps,2*day_in_s,bus_areas);
 total_load       = ppval(Load_spline,0:fivemin_in_s:2*day_in_s-fivemin_in_s);  %subtract because don't need load at final moment
-ps               = get_ps_areas_libby(ps,bus_areas,load_buses,total_load); %is this the right total load? (before total load was for 60 seconds)
+ps               = get_ps_areas_libby(ps,bus_areas,load_buses,total_load);
 
 
 
 %% Run time horizon sim
-t_all     = zeros(day_in_s,1);
-theta_all = zeros(day_in_s,nbus);
-delta_all = zeros(day_in_s,nmacs);
-omega_all = zeros(day_in_s,nmacs);
-Pm_all    = zeros(day_in_s,nmacs);
+% t_all     = zeros(day_in_s,1);
+% theta_all = zeros(day_in_s,nbus);
+% delta_all = zeros(day_in_s,nmacs);
+% omega_all = zeros(day_in_s,nmacs);
+% Pm_all    = zeros(day_in_s,nmacs);
+
+t_all     = [];
+theta_all = [];
+delta_all = [];
+omega_all = [];
+Pm_all    = [];
 
 for i=1:day_in_5min
     if mod(i,10)==0
@@ -79,19 +85,25 @@ for i=1:day_in_5min
     % Set limits for Diffeq Limiter
     ps.gen(:,C.ge.reg_ramp_up)   = Rgs_sbs(:,1); 
     ps.gen(:,C.ge.reg_ramp_down) = -Rgs_sbs(:,1);
-    ps.gov(:,C.gov.LCmax)        = ones(nmacs,1); %include the rest of ps.gov?
+    ps.gov(:,C.gov.LCmax)        = ones(nmacs,1); 
     ps.gov(:,C.gov.LCmin)        = -ones(nmacs,1);
 
 
     % Simulate the steady state
     [t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,t_range,0);
     
-    % Combine data
-    t_all(t_range)=t;
-    theta_all(t_range,:) =theta;
-    delta_all(t_range,:) =delta;
-    omega_all(t_range,:) =omega;
-    Pm_all(t_range,:)    =Pm;    
+    %Combine data
+    t_all = vertcat(t_all,t);
+    theta_all = horzcat(theta_all,theta);
+    delta_all = horzcat(delta_all,delta);
+    omega_all = horzcat(omega_all,omega);
+    Pm_all    = horzcat(Pm_all,Pm);
+%     % Combine data
+%     t_all(t_range)       = t;
+%     theta_all(t_range,:) = theta;
+%     delta_all(t_range,:) = delta;
+%     omega_all(t_range,:) = omega;
+%     Pm_all(t_range,:)    = Pm;    
 end
 
 
@@ -158,4 +170,11 @@ axis([tmin day_in_s -Inf Inf])
 set(gca,'FontSize',fontsize)
 xlabel('Time')
 ylabel('Load')
+
+%%
+
+s1=5.79e4
+s2=5.82e4
+s_length=s2-s1
+minute_length=s_length/60
 

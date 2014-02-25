@@ -37,20 +37,22 @@ dfg_dxy = @(t,xy) dae_jacobian_lk_perm(t,xy,ps);
 % test the differential equations around the current point
 %fg0 = fg(0,xy0);
 
+f=@(t,x,y) differential_eqs_lk_perm(t,x,y,ps);
+g=@(t,x,y) algebraic_eqs_lk_perm(t,x,y,ps);
 
 %% Checkpoint
-if check_stab
-    f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps);
-    f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps);
-    g_x = @(x)algebraic_eqs_lk_perm(0,x,y0,ps);
-    g_y = @(y)algebraic_eqs_lk_perm(0,x0,y,ps);
-    [f,df_dx0,df_dy0] = f_y(y0);
-    [g,dg_dx0,dg_dy0] = g_x(x0);
-    [g,dg_dx0,dg_dy0] = g_y(y0);
-    k=ps.areas(1,1)
-    [max_real_evals_full,num_pos_evals]=stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0);
-    %checkDerivatives(g_y, dg_dy0,y0);
-end
+% if check_stab
+%     f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps);
+%     f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps);
+%     g_x = @(x)algebraic_eqs_lk_perm(0,x,y0,ps);
+%     g_y = @(y)algebraic_eqs_lk_perm(0,x0,y,ps);
+%     [f,df_dx0,df_dy0] = f_y(y0);
+%     [g,dg_dx0,dg_dy0] = g_x(x0);
+%     [g,dg_dx0,dg_dy0] = g_y(y0);
+%     k=ps.areas(1,1)
+%     [max_real_evals_full,num_pos_evals]=stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0);
+%     %checkDerivatives(g_y, dg_dy0,y0);
+% end
 
 %% ODE
 % set options for the ODE solver
@@ -61,26 +63,28 @@ odeopts = odeset('Mass',mass_mat,...
                  'Jacobian',dfg_dxy);
 
 % solve the ode's
-[t,XY] = ode23t(fg,tspan,xy0,odeopts);
+[t,X,Y] = solve_dae(f,g,[],[],x0,y0,tspan);%odeopts);
 
 % extract the data from XY
-X = XY(:,1:ix.nx);
-Y = XY(:,(1:ix.ny) + ix.nx);
-delta = X(:,ix.x.delta);
-omega = X(:,ix.x.omega_pu) * omega_0; 
-Pm =    X(:,ix.x.Pm);
+% X = XY(:,1:ix.nx);
+% Y = XY(:,(1:ix.ny) + ix.nx);
+delta = X(ix.x.delta,:);
+omega = X(ix.x.omega_pu,:) * omega_0; 
+Pm =    X(ix.x.Pm,:);
 theta = Y;
 
 % relative angle
-theta_end = theta(end,:)';
-delta_end = delta(end,:)';
+theta_end = theta(:,end);
+delta_end = delta(:,end);
+omega_end = omega(:,end);
+Pm_end    = Pm(:,end);
 mac_bus_i = ps.bus_i(ps.mac(:,1));
 delta_m = delta_end - theta_end(mac_bus_i);
 
 % save the most recent data to the ps structure.
-ps.bus(:,C.bu.Vang) = (theta_end)*180/pi;
-ps.mac(:,C.ma.omega) = omega(end,:)';
-ps.mac(:,C.ma.Pm) = Pm(end,:)';
+ps.bus(:,C.bu.Vang)    = (theta_end)*180/pi;
+ps.mac(:,C.ma.omega)   = omega_end;
+ps.mac(:,C.ma.Pm)      = Pm_end;
 ps.mac(:,C.ma.delta_m) = delta_m;
 
 [x_new,y_new] = get_xy_will(ps);

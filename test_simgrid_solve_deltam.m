@@ -98,23 +98,23 @@ axis([tmin tmax -Inf Inf])
 set(gca,'FontSize',fontsize)
 xlabel('Time')
 ylabel('Pm')
-
-figure(3);clf;
-subplot(3,1,1)
-plot(t,Pm(:,1))
-set(gca,'FontSize',fontsize)
-xlabel('Time')
-ylabel('Pm')
-subplot(3,1,2)
-plot(t,Pm(:,2),'g')
-set(gca,'FontSize',fontsize)
-xlabel('Time')
-ylabel('Pm')
-subplot(3,1,3)
-plot(t,Pm(:,3),'r')
-set(gca,'FontSize',fontsize)
-xlabel('Time')
-ylabel('Pm')
+% 
+% figure(3);clf;
+% subplot(3,1,1)
+% plot(t,Pm(:,1))
+% set(gca,'FontSize',fontsize)
+% xlabel('Time')
+% ylabel('Pm')
+% subplot(3,1,2)
+% plot(t,Pm(:,2),'g')
+% set(gca,'FontSize',fontsize)
+% xlabel('Time')
+% ylabel('Pm')
+% subplot(3,1,3)
+% plot(t,Pm(:,3),'r')
+% set(gca,'FontSize',fontsize)
+% xlabel('Time')
+% ylabel('Pm')
 
 figure(4);clf;
 %subplot(subplot_row,subplot_col,5)
@@ -124,15 +124,15 @@ set(gca,'FontSize',fontsize)
 xlabel('Time')
 ylabel('Load')
 
-figure;clf;
-libby=[5 19];
-plot(t,omega(:,libby));
-axis([tmin tmax -Inf Inf])
-set(gca,'FontSize',fontsize)
-xlabel('Time')
-ylabel('Omega')
-title(['K = ',num2str(ps.areas(1,1))])
-ylim([376.988,376.992])
+% figure;clf;
+% libby=[5 19];
+% plot(t,omega(:,libby));
+% axis([tmin tmax -Inf Inf])
+% set(gca,'FontSize',fontsize)
+% xlabel('Time')
+% ylabel('Omega')
+% title(['K = ',num2str(ps.areas(1,1))])
+% ylim([376.988,376.992])
 
 
 ps.gen(libby,:)
