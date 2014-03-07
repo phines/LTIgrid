@@ -52,10 +52,12 @@ elseif Val == 3
     end
     Load_spline = spline(time,load_points');
 elseif Val == 4
-    load_change    = initial_load;
-    load_change(1) = load_change(1)*1.005;
-    load           = [repmat(initial_load,1,floor(tmax/3)), repmat(load_change,1,ceil(2*tmax/3))];%,repmat(initial_load,1,tmax/3)];
-    load_points    = load';
+    load_change     = initial_load;
+    load_change_val = (1.005:.0005:1.05).*load_change(1);
+    load            = repmat(initial_load,1,tmax);
+    load(1,tmax/3:tmax/3+length(load_change_val)-1)=load_change_val;
+    load(1,tmax/3+length(load_change_val):end)=load_change_val(end);
+    load_points     = load';
     time = 1:tmax;
     Load_spline = spline(time,load_points');
     

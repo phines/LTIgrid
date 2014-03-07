@@ -16,18 +16,12 @@ function [f,df_dx,df_dy] = differential_eqs_lk_perm(t,x,y,ps,opt)
 
 
 
-
-
-
 %keyboard
 % constants
 C     = psconstants_will;
 nmacs = size(ps.mac,1);
 n     = size(ps.bus,1);
 ix    = get_indices_will(n,nmacs);
-
-
-
 
 
 % extract data from ps

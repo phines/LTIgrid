@@ -190,27 +190,12 @@ for j=1:length(k)
     xlabel('Time')
     ylabel('Load')
     
-    %%
-    
-    s1=5.79e4
-    s2=5.82e4
-    s_length=s2-s1
-    minute_length=s_length/60
     
     %% from will
     % Check standards
     disp('Testing NERC Standards')
-    [ACE,CPS1_scores,CPS2_scores] = checkStandards_will(ps,omega_all,theta_all,t_all);
-    
-    % CPS1
     epsilon_1 = 11.6e-3;
-    L10 = 50
-    CF   = mean(abs(CPS1_scores))/epsilon_1^2;
-    CPS1 = (2 - CF)*100
+    [ACE,CPS1_scores,CPS2_scores,CPS1,CPS2] = checkStandards_will(ps,omega_all,theta_all,t_all,epsilon_1);
     
-    % CPS2
-    violations_1 = length(find(CPS2_scores(:,1)>=L10));
-    violations_2 = length(find(CPS2_scores(:,2)>=L10));
-    CPS2 = [(1 - (violations_1/length(CPS2_scores)))*100 (1 - (violations_2/length(CPS2_scores)))*100]
-
+  
 end

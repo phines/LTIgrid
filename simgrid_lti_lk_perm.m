@@ -41,18 +41,18 @@ f=@(t,x,y) differential_eqs_lk_perm(t,x,y,ps);
 g=@(t,x,y) algebraic_eqs_lk_perm(t,x,y,ps);
 
 %% Checkpoint
-% if check_stab
-%     f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps);
-%     f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps);
-%     g_x = @(x)algebraic_eqs_lk_perm(0,x,y0,ps);
-%     g_y = @(y)algebraic_eqs_lk_perm(0,x0,y,ps);
-%     [f,df_dx0,df_dy0] = f_y(y0);
-%     [g,dg_dx0,dg_dy0] = g_x(x0);
-%     [g,dg_dx0,dg_dy0] = g_y(y0);
-%     k=ps.areas(1,1)
-%     [max_real_evals_full,num_pos_evals]=stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0);
-%     %checkDerivatives(g_y, dg_dy0,y0);
-% end
+if check_stab
+    f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps);
+    f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps);
+    g_x = @(x)algebraic_eqs_lk_perm(0,x,y0,ps);
+    g_y = @(y)algebraic_eqs_lk_perm(0,x0,y,ps);
+    [fcheck,df_dx0,df_dy0] = f_y(y0);
+    [gcheck,dg_dx0,dg_dy0] = g_x(x0);
+    [gcheck2,dg_dx0,dg_dy0] = g_y(y0);
+    k=ps.areas(1,1);
+    [max_real_evals_full,num_pos_evals]=stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0,ps);
+    %checkDerivatives(g_y, dg_dy0,y0);
+end
 
 %% ODE
 % set options for the ODE solver
