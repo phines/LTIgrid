@@ -1,30 +1,30 @@
-function [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,Load,perc_reg)
+function [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,Load,perc_reg,disp_t)
+%disp_t in minutes
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
  
-
 C     = psconstants_will;
 %% Load infortmation
 if exist('Load','var') 
-    One_Day_Hour_Chunks = Load;
+    One_Day_in_disp_t_Load = Load;
 else 
     All_Load            = importdata('load.mat');
     One_Day             = All_Load{133}; %% choose one random day's load
-    One_Day_Hour_Chunks = One_Day(1:12:end)*.03; %scaled to fit current Pmax's, 5 min res, so to get 1hr time steps, pull 1st of every 12 points
+    One_Day_in_disp_t_Load = One_Day(1:12:end)*.03; %scaled to fit current Pmax's, 5 min res, so to get 1hr time steps, pull 1st of every 12 points
     %above should be unhardcoded
 end
 
 %% Power System information
 
 gendata   = ps.gen;
-areas     = ps.bus(:,C.bu.area);
-num_areas = length(unique(areas));
-S_cost    = 1000;
+bus_areas = ps.bus(:,C.bu.area);
+num_areas = length(unique(bus_areas));
+S_cost    = 1000; %orig=1000
 reg_frac  = perc_reg/100;
 [gen_locs,load_locs] = get_locs(ps);
-load_areas           = areas(load_locs==1);
-gen_areas            = areas(gen_locs==1);
-num_time_steps       = size(One_Day_Hour_Chunks,2);
+load_areas           = bus_areas(load_locs==1);
+gen_areas            = bus_areas(gen_locs==1);
+num_time_steps       = size(One_Day_in_disp_t_Load,2);
 num_gens             = size(gen_areas,1);
 Pgs_sbs              = zeros(num_gens,num_time_steps);
 Rgs_sbs              = zeros(num_gens,num_time_steps);
@@ -36,9 +36,9 @@ for j=1:num_areas
     num_gens_area  = size(gendata_area,1);
     Pmin           = gendata_area(:,C.ge.Pmin);
     Pmax           = gendata_area(:,C.ge.Pmax);
-    RRu            = gendata_area(:,C.ge.ramp_rate_up); %%note, I added this gendata column, so should be updated.
+    RRu            = gendata_area(:,C.ge.ramp_rate_up)*disp_t; %comes in as MW/min, want MW/deltat
     RRd            = -RRu;
-    load_in_area   = One_Day_Hour_Chunks(load_areas==j,:); %how to take care of stochastic load here..?
+    load_in_area   = One_Day_in_disp_t_Load(bus_areas==j,:); %how to take care of stochastic load here..?
     load_area_sum  = sum(load_in_area,1);  
     reg_scheduled  = load_area_sum*reg_frac; 
     percent_pmax   = Pmax/sum(Pmax);

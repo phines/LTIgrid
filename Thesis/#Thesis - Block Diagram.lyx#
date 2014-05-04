@@ -1,0 +1,411 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Block Diagram Derivation
+\end_layout
+
+\begin_layout Standard
+Our dynamics are modeled by 
+\begin_inset Formula 
+\[
+P_{g}=P_{m}-D\Delta\omega-M\Delta\dot{\omega}\quad\left(1\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\dot{\delta}=\omega_{0}\Delta\omega\quad\left(2\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+T_{g}\dot{P}_{m}=P_{ref}+\Delta P_{c}-P_{m}-\frac{\Delta\omega}{R}\quad\left(3\right),
+\]
+
+\end_inset
+
+ and
+\begin_inset Formula 
+\[
+\dot{P}_{c}=-k\cdot ACE\quad\left(4\right).
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The first equation, known as the Swing Equation, serves as the physical
+ model of the generator, where 
+\begin_inset Formula $P_{g}$
+\end_inset
+
+ is the electrical power desired by the system, 
+\begin_inset Formula $P_{m}$
+\end_inset
+
+ is the mechanical power output of the turbine, 
+\begin_inset Formula $\triangle\omega$
+\end_inset
+
+ is the deviation in generator frequency (a.k.a.
+ generator angular speed) from the nominal frequency of 60 Hz, 
+\begin_inset Formula $\triangle\dot{\omega}$
+\end_inset
+
+ is the first derivative with respect to time of the change in generator
+ frequency (a.k.a.
+ generator angular acceleration), and 
+\begin_inset Formula $M$
+\end_inset
+
+ and 
+\begin_inset Formula $D$
+\end_inset
+
+ are damping constants.
+ This equation shows that, with the mechanical power held constant, a decrease
+ (increase) in desired generator power 
+\begin_inset Formula $P_{g}$
+\end_inset
+
+ will result in an increase (decrease) in generator frequency.
+ This is analogous to what we experience in a car when we begin going down
+ a hill.
+ If you were to keep pressing on the gas with the same pressure as you begin
+ going down the hill (i.e.
+ hold the mechanical power of your engine constant while decreasing the
+ resistance against the car), the engine would speed up; this is why most
+ of us decrease our gas pedal pressure as we descend.
+\end_layout
+
+\begin_layout Standard
+The second equation simply states that the generator frequency (angular
+ speed) 
+\begin_inset Formula $\omega$
+\end_inset
+
+ is equal to the derivative of the generator angle 
+\begin_inset Formula $\delta$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The third equation governs droop control, where 
+\begin_inset Formula $\dot{P}_{m}$
+\end_inset
+
+ is the change with respect to time of the mechanical power, 
+\begin_inset Formula $P_{ref}$
+\end_inset
+
+ is the set point of the system derived by economic dispatch, 
+\begin_inset Formula $\triangle P_{c}$
+\end_inset
+
+ is the change in the SOMETHINGGGG, and 
+\begin_inset Formula $T_{g}$
+\end_inset
+
+ and 
+\begin_inset Formula $R$
+\end_inset
+
+ are scaling constants.
+ Droop, also known as 
+\begin_inset Quotes eld
+\end_inset
+
+primary frequency control,
+\begin_inset Quotes erd
+\end_inset
+
+ is a control on the time scale of milliseconds to seconds which allows
+ the mechanical output to change in order to help to correct deviation from
+ nominal frequency.
+ Without droop control, the mechanical power output cannot change and instead
+ frequency must provide all of the buffer for when 
+\begin_inset Formula $P_{g}$
+\end_inset
+
+ changes, causing frequency swings and significant grid performance issues.
+ We see that the equation relates 
+\begin_inset Formula $\dot{P}_{m}$
+\end_inset
+
+ to the error between the set point of power and the actual power output
+ 
+\begin_inset Formula $\left(P_{ref}+\Delta P_{c}-P_{m}\right)$
+\end_inset
+
+ and to the error between the current frequency and the nominal frequency
+ 
+\begin_inset Formula $\left(\frac{\triangle\omega}{R}\right)$
+\end_inset
+
+.
+ This control, then, alters the mechanical output in response to these errors;
+ if the desired power output is wrong, change the output, and if the frequency
+ is too high or low, change the output (the frequency is directly related
+ to the output via the swing equation).
+ Comparing this with our above downhill car example, this is analogous to
+ decreasing the pressure on the pedal; the difference between the actual
+ power output and the necessary power output is non-zero, and thus we changing
+ the mechanical output by moving our foot, instead of allowing the engine
+ to increase speed.
+\end_layout
+
+\begin_layout Standard
+The fourth equation is a secondary frequency control, known as automatic
+ generation control (AGC), which operates on the time scale of seconds to
+ minutes, where 
+\begin_inset Formula $\dot{P}_{c}$
+\end_inset
+
+ is SOMETHINGGG, and, as the North American Electricity Reliability Council
+ explains, ACE 
+\begin_inset Quotes eld
+\end_inset
+
+is used to determine a control area’s control performance with respects
+ to its’ impact on system frequency.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+To obtain our control diagram, we take the Laplace transform of each of
+ the above equations.
+ Starting with equation 4, we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\triangle\dot{P}_{c}(t)=-k\cdot ACE(t)\rightarrow\mathcal{L}\rightarrow s\triangle P_{c}(s)=-k\cdot ACE(s)\rightarrow\triangle P_{c}(s)=\frac{-k}{s}\cdot ACE(s).
+\]
+
+\end_inset
+
+ Thus, we see on our block diagram that ACE passes through a gain block
+ of 
+\begin_inset Formula $\frac{-k}{s}$
+\end_inset
+
+ to produce 
+\begin_inset Formula $\triangle P_{c}.$
+\end_inset
+
+ Additionally, we note that the limits to 
+\begin_inset Formula $\triangle P_{c}$
+\end_inset
+
+ are applied within this block, producing 
+\begin_inset Formula $\triangle P_{c_{lim}}.$
+\end_inset
+
+ Within the 3rd equation, we define 
+\begin_inset Formula 
+\[
+P_{c}(t)=P_{ref}(t)+\triangle P_{c_{lim}}(t)-\frac{\triangle\omega(t)}{R},
+\]
+
+\end_inset
+
+ and taking the Laplace transform, we simply have 
+\begin_inset Formula 
+\[
+P_{c}(s)=P_{ref}(s)+\triangle P_{c_{lim}}(s)-\frac{\triangle\omega(s)}{R},
+\]
+
+\end_inset
+
+ shown in the summation on the next step of the block diagram.
+ Limiting this gives us 
+\begin_inset Formula $P_{c_{lim}}.$
+\end_inset
+
+ Then, equation 3 can be written as 
+\begin_inset Formula 
+\[
+T_{g}\dot{P}_{m}(t)=P_{c_{lim}}(t)-P_{m}(t).
+\]
+
+\end_inset
+
+Taking the Laplace transform, the result is 
+\begin_inset Formula 
+\[
+sT_{g}P_{m}(s)=P_{c_{lim}}(s)-P_{m}(s).
+\]
+
+\end_inset
+
+Adding 
+\begin_inset Formula $P_{m}$
+\end_inset
+
+ to the other side, we have 
+\begin_inset Formula 
+\[
+\left(sT_{g}+1\right)P_{m}(s)=P_{c_{lim}}(s)\rightarrow P_{m}=\left(\frac{1}{T_{g}s+1}\right)P_{c_{lim}}.
+\]
+
+\end_inset
+
+ Lastly, we take the Laplace transform of equation one, resulting in 
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+sM\triangle\omega(s)=P_{m}(s)-P_{g}(s)-D\triangle\omega(s).
+\]
+
+\end_inset
+
+ Solving for 
+\begin_inset Formula $\triangle\omega$
+\end_inset
+
+, we have
+\begin_inset Formula 
+\[
+\left(Ms+D\right)\triangle\omega(s)=P_{m}(s)-P_{g}(s)\rightarrow\triangle\omega(s)=\frac{1}{Ms+D}\left(P_{m}(s)-P_{g}(s)\right).
+\]
+
+\end_inset
+
+As noted above, a number of limits must be applied to the outputs, which
+ is done to more accurately reflect the operation of a realistic system.
+ The limit on 
+\begin_inset Formula $\triangle P_{c}$
+\end_inset
+
+ is applied to ensure that the regulation provided by a given generator
+ stays within the defined percentage.
+ The limit on 
+\begin_inset Formula $P_{c}$
+\end_inset
+
+ ensures that the generator stays within its absolute maximum and minimum
+ power output.
+ We place a limit on 
+\begin_inset Formula $\dot{P}_{m}$
+\end_inset
+
+ to ensure that the generator ramping does not occur faster than is phsycially
+ possible; a given generator can only change its output so quickly.
+ Lastly, we apply a limit to 
+\begin_inset Formula $\triangle\dot{P}_{c}$
+\end_inset
+
+ to ensure that the system is not attempting to change 
+\begin_inset Formula $\triangle\dot{P}_{c}$
+\end_inset
+
+ when 
+\begin_inset Formula $\triangle P_{c}$
+\end_inset
+
+ is already at its limit.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/Libby/Downloads/Block Diagram (2).png
+	lyxscale 50
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

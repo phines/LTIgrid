@@ -1,169 +1,150 @@
-% clc
-% clear all
+clc
+clear all
 
 global Load_spline
+global Pref_check
+global delta_Pref
+global t_span
+global delta_Pc_lim_check
+
+Pref_check=[];
+delta_Pc_lim_check=[];
+load case39_vars.mat
 C = psconstants_will;
-
-% ps = case9_ps_lk_perm; % get the real one? K SHOULD BE 0.151, CHECK IT
-% ps = updateps(ps);
-
-%% Set up 2 area, 39bus per area case. 
-ps = case39_ps_will;
-ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED 
-ps = updateps(ps);
-
-ps.bus(40:end,C.bu.area) = 2;
-reg                      = 0.05*ones(length(ps.gov(:,1)),1)
-%reg_gen34                = 0
-%reg(4)                   = reg_gen34
-%reg(5)=reg_gen34
-ps.gov(:,C.gov.R)        = ps.gen(:,C.ge.Pmax).*reg/ps.baseMVA % reg constant is 5% of Pmax p.u. instead of 5% of value multiplied by
-ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
-ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
-
-load_buses = ps.bus_i(ps.shunt(:,1));
-bus_areas  = ps.bus(load_buses,C.bu.area);
-
-
-%% Set up long term
-tmin = 0;
-tmax = tmin+59;
-day_in_s     = 24*60*60; %24hrs*60min/hr*60s/min
-fivemin_in_s = 5*60;
-day_in_5min  = day_in_s/fivemin_in_s;
-
-perc_reg = 1;
-ps0      = ps;
-nmacs    = size(ps.gen,1);
-nbus     = size(ps.bus,1);
-ix       = get_indices_will(nbus,nmacs); % index to help us find stuff
-ps       = find_areas(ps);
-
-%check to see if slower ramp rates are needed
-gen_type    = ps.gen(:,C.ge.type)
-gen_type(4) = 3
-ps.gen(:,C.ge.type) = gen_type
-ps       = set_ramp_rates(ps);
-
-
-%% form the load
-[Load_spline,ps] = Load_Type(4,ps,2*day_in_s,bus_areas);
-total_load       = ppval(Load_spline,0:fivemin_in_s:2*day_in_s-fivemin_in_s);  %subtract because don't need load at final moment
-ps               = get_ps_areas_libby(ps,bus_areas,load_buses,total_load,0.006);
-
 
 
 %% Run time horizon sim
 %k=[0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2];
-k=[0.005];
+k=0.005;
+
 for j=1:length(k)
-    k(j)
-    ps        = get_ps_areas_libby(ps,bus_areas,load_buses,total_load,k(j)); %%delete this afer testing
+    %k(j)
+    %ps        = get_ps_areas_libby(ps,load_bus_areas,load_buses,total_load,k(j)); %%delete this afer testing
     t_all     = zeros(day_in_s,1);
     theta_all = zeros(day_in_s,nbus);
     delta_all = zeros(day_in_s,nmacs);
     omega_all = zeros(day_in_s,nmacs);
     Pm_all    = zeros(day_in_s,nmacs);
+    delta_Pc_all    = zeros(day_in_s,nmacs);
+    Pgs_sbs_all   = [];
 
-%     t_all     = zeros(3000,1);
-%     theta_all = zeros(3000,nbus);
-%     delta_all = zeros(3000,nmacs);
-%     omega_all = zeros(3000,nmacs);
-%     Pm_all    = zeros(3000,nmacs);
-%     
-    for i=1:day_in_5min
+    for i=1:6
         if mod(i,10)==0
             i
         end
         
-        t_range = [1:fivemin_in_s]+fivemin_in_s*(i-1);
-        
+        t_range = [1:disp_t_in_s]+disp_t_in_s*(i-1);
+        t_span=[t_range(1)-1,t_range(end)];
         if i==1
-            % Set up x0/y0 by running one time step of ED to get PGs
-            initial_load      = ps.shunt(:,C.sh.P);
-            %timestep_check   = [initial_load,initial_load*1.2,initial_load*0.8, initial_load*0.7];
-            [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_5min-1),perc_reg);
+            [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_disp_t-1),perc_reg,disp_t_mins);
             ps.gen(:,C.ge.Pg) = Pgs_sbs(:,1); %Use first time step's optimized Pg's for dcpf
             ps                = dcpf(ps);
+            
+            delta_Pref        = [ps.gen(:,C.ge.Pg),Pgs_sbs(:,2)];
             
             % prepare the machine state variables
             ps.mac = get_mac_state(ps,'linear');
             
         else
-            [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_5min-1),perc_reg); %load length should stay the same, always looking same distance into future
+            [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_disp_t-1),perc_reg,disp_t_mins); %load length should stay the same, always looking same distance into future
             ps.gen(:,C.ge.Pg) = Pgs_sbs(:,1);
-            
+            delta_Pref        = [ps.gen(:,C.ge.Pg),Pgs_sbs(:,2)];
         end
         
         
-        
+        Pgs_sbs_all = [Pgs_sbs_all,Pgs_sbs(:,1)];
         % Set limits for Diffeq Limiter
         ps.gen(:,C.ge.reg_ramp_up)   = Rgs_sbs(:,1);
         ps.gen(:,C.ge.reg_ramp_down) = -Rgs_sbs(:,1);
-        ps.gov(:,C.gov.LCmax)        = ones(nmacs,1);
-        ps.gov(:,C.gov.LCmin)        = -ones(nmacs,1);
         
         
         % Simulate the steady state
-        if i==10
-            [t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,t_range,1);
-        else
-            [t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,t_range,0);
-        end
+        
+        [t,theta,delta,omega,Pm,delta_Pc,ps] = simgrid_lti_lk_perm(ps,t_span,0,i);
+
         
         theta_sp = spline(t,theta,t_range);
         delta_sp = spline(t,delta,t_range);
         omega_sp = spline(t,omega,t_range);
         Pm_sp    = spline(t,Pm,t_range);
+        delta_Pc_sp    = spline(t,delta_Pc,t_range);
         
         t_all(t_range)       = t_range;
         theta_all(t_range,:) = theta_sp';
         delta_all(t_range,:) = delta_sp';
         omega_all(t_range,:) = omega_sp';
         Pm_all(t_range,:)    = Pm_sp';
+        delta_Pc_all(t_range,:)    = delta_Pc_sp';
     end
     
     
+   % Pref check
+    [Pref_check] = unique(Pref_check,'rows');
+    Pref_t = Pref_check(:,1);
+    Pref_1 = Pref_check(:,2);
+    Pref_2 = Pref_check(:,3);
+    Pref_all = Pref_check(:,2:end);
+    [delta_Pc_lim_check] = unique(delta_Pc_lim_check,'rows');
+    delta_Pc_lim_t = delta_Pc_lim_check(:,1);
+    delta_Pc_lim_1 = delta_Pc_lim_check(:,2);
+    delta_Pc_lim_2 = delta_Pc_lim_check(:,3);
+    
     %% do some plots
+    %close all
+    day_in_s = i*300;
     subplot_row = 2;
     subplot_col = 2;
     fontsize = 16;
  %   day_in_s=3000  %for making i=1:10 instead of i=1:day_in5min
+ % Get used all's.
+    ids   = find(t_all(t_all~=0));
+    t_all = t_all(ids);
+    delta_all = delta_all(ids,:);
+    theta_all = theta_all(ids,:);
+    omega_all = omega_all(ids,:);
+    Pm_all = Pm_all(ids,:);
+    delta_Pc_all = delta_Pc_all(ids,:);
+    t_all_minute = t_all/60;
+    
     
     figure%(2); clf;
     subplot(subplot_row,subplot_col,1)
-    plot(t_all,delta_all);
-    axis([tmin day_in_s -Inf Inf])
+    plot(t_all_minute,delta_all,'.','MarkerSize',1);
+    axis([tmin day_in_s/60 min(min(delta_all))-.5 max(max(delta_all))+.5])
     set(gca,'FontSize',fontsize)
-    xlabel('Time')
-    ylabel('Delta')
-    title(['K = ',num2str(ps.areas(1,1))])
+    xlabel('Time (minutes) ')
+    ylabel('Delta (rads) ')
+   % title(['K = ',num2str(ps.areas(1,1))])
     
     
     %figure(2);clf;
     subplot(subplot_row,subplot_col,2)
-    plot(t_all,theta_all);
-    axis([tmin day_in_s -Inf Inf])
+    plot(t_all_minute,theta_all,'.','MarkerSize',1);
+    axis([tmin day_in_s/60 min(min(theta_all))-.5 max(max(theta_all))+.5])
     set(gca,'FontSize',fontsize)
-    xlabel('Time')
-    ylabel('Theta')
+    xlabel('Time (minutes) ')
+    ylabel('Theta (rads) ')
     
     %figure(3);clf
     subplot(subplot_row,subplot_col,3)
-    plot(t_all,omega_all);
-    axis([tmin day_in_s -Inf Inf])
+    plot(t_all_minute,omega_all,'.','MarkerSize',1);
+    axis([tmin day_in_s/60 min(min(omega_all))-.1 max(max(omega_all))+.1])
     set(gca,'FontSize',fontsize)
-    xlabel('Time')
-    ylabel('Omega')
-    ylim([376.991118428,376.991118433])
+    xlabel('Time (minutes) ')
+    ylabel('Omega (rad/s) ')
+    %ylim([376.991118428,376.991118433])
     
     %figure(4);clf;
-    subplot(subplot_row,subplot_col,4)
-    plot(t_all,Pm_all);
-    axis([tmin day_in_s -Inf Inf])
+    subplot(subplot_row,subplot_col,4); hold on;
+    plot(t_all_minute,Pm_all.*ps.baseMVA,'.','MarkerSize',1);
+%    plot(Pref_t/60,Pref_all*ps.baseMVA,'m.','MarkerSize',1)
+%     plot(Pref_t/60,Pref_1*ps.baseMVA,'m.','MarkerSize',1)
+%     plot(Pref_t/60,Pref_2*ps.baseMVA,'r.','MarkerSize',1)
+    axis([tmin day_in_s/60 min(min(Pm_all.*ps.baseMVA))-.5 max(max(Pm_all.*ps.baseMVA))+.5])
     set(gca,'FontSize',fontsize)
-    xlabel('Time')
-    ylabel('Pm')
+    xlabel('Time (minutes) ')
+    ylabel('Pm (MW) ')
+
     %
     % figure(3);clf;
     % subplot(3,1,1)
@@ -184,33 +165,52 @@ for j=1:length(k)
     
     figure;%(4);clf;
     %subplot(subplot_row,subplot_col,5)
-    plot(t_all, ppval(Load_spline(1),t_all),'k')
-    axis([tmin day_in_s -Inf Inf])
+    plot(t_all_minute, ppval(Load_spline(1),t_all),'k')%.','MarkerSize',1)
+    axis([tmin day_in_s/60 min(min(ppval(Load_spline(1),t_all)))-.5 max(max(ppval(Load_spline(1),t_all)))+.5])
     set(gca,'FontSize',fontsize)
-    xlabel('Time')
-    ylabel('Load')
+    xlabel('Time (minutes) ')
+    ylabel('Load (MW) ')
     
-    %%
+ 
+    t_Pref_line = 0:300:300*i;
+    for k=1:length(t_Pref_line)
+        lk=Pref_check(:,1)==t_Pref_line(k);
+        Preflk=Pref_check(lk,:);
+        Pref_lines(k)=Preflk(end,2);
+    end
+    Pref_linear_int = interp1(t_Pref_line,Pref_lines*ps.baseMVA,Pref_t);
+
+    figure; hold on;
+    plot(t_all_minute,Pm_all.*ps.baseMVA);
+    plot(Pref_t/60,Pref_1*ps.baseMVA,'m-')%,'MarkerSize',1)
+    plot(Pref_t/60,Pref_2*ps.baseMVA,'r-')%,'MarkerSize',1)
+    %plot(Pref_t/60,Pref_linear_int,'g.','MarkerSize',1)
+    plot(t_all_minute,omega_all/3.77)
+    axis([tmin day_in_s/60 min(min(Pm_all.*ps.baseMVA))-.5 max(max(Pm_all.*ps.baseMVA))+.5])
+    set(gca,'FontSize',fontsize)
+    xlabel('Time (minutes) ')
+    ylabel('Pm (MW) ') 
+    legend('Pm, Area 1','Pm, Area 2','Pref, Area 1','Pref, Area 2','omega','omega2')%,'
     
-    s1=5.79e4
-    s2=5.82e4
-    s_length=s2-s1
-    minute_length=s_length/60
+    figure; hold on;
+    plot(t_all_minute,delta_Pc_all*ps.baseMVA);
+    plot(delta_Pc_lim_t/60,delta_Pc_lim_1*ps.baseMVA,'b')
+    plot(delta_Pc_lim_t/60,delta_Pc_lim_2*ps.baseMVA,'g')
+    axis([tmin day_in_s/60 min(min(delta_Pc_all*ps.baseMVA))-.02 max(max(delta_Pc_all*ps.baseMVA))+.02])
+    set(gca,'FontSize',fontsize)
+    xlabel('Time (minutes) ')
+    ylabel('delta Pc (MW) ')
+    legend('delta Pc 1','delta Pc 2','delta Pc 1 limited','delta Pc 2 limited')
+    
     
     %% from will
     % Check standards
     disp('Testing NERC Standards')
-    [ACE,CPS1_scores,CPS2_scores] = checkStandards_will(ps,omega_all,theta_all,t_all);
-    
-    % CPS1
     epsilon_1 = 11.6e-3;
-    L10 = 50
-    CF   = mean(abs(CPS1_scores))/epsilon_1^2;
-    CPS1 = (2 - CF)*100
+    [ACE,CPS1_scores,CPS2_scores,CPS1,CPS2] = checkStandards_will(ps,omega_all,theta_all,t_all,epsilon_1);
     
-    % CPS2
-    violations_1 = length(find(CPS2_scores(:,1)>=L10));
-    violations_2 = length(find(CPS2_scores(:,2)>=L10));
-    CPS2 = [(1 - (violations_1/length(CPS2_scores)))*100 (1 - (violations_2/length(CPS2_scores)))*100]
-
+  
 end
+
+
+

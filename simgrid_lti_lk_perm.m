@@ -1,6 +1,6 @@
-function [t,theta,delta,omega,Pm,ps] = simgrid_lti_lk_perm(ps,tspan,check_stab)
+function [t,theta,delta,omega,Pm,delta_PC, ps] = simgrid_lti_lk_perm(ps,tspan,check_stab,k)
 % NOTE THAT THIS FUNCTION IS NOT WORKING YET...
-EPS = 1e-6;
+%EPS = 1e-6;
 
 % prep work and data extraction
 nmacs = size(ps.mac,1); % get the number of machines
@@ -9,9 +9,12 @@ ix = get_indices_will(n,nmacs); % index to help us find stuff
 omega_0 = 2*pi*60; % normal machine speeds
 C = psconstants_will;
 
+if k == 1
 [x0,y0] = get_xy_will(ps); % get the state of everything at the current operating point
-
-
+else
+    x0=ps.x;
+    y0=ps.y;
+end
 % check to see if x/y are a valid operating point - SHOULD WE LEAVE THIS IN
 % OR GET RID OF IT SINCE IT ALTERS THE CURRENT POINT
 % [g,~,dg_dy] = algebraic_eqs_lk_perm(0,x0,y0,ps);
@@ -71,6 +74,7 @@ odeopts = odeset('Mass',mass_mat,...
 delta = X(ix.x.delta,:);
 omega = X(ix.x.omega_pu,:) * omega_0; 
 Pm =    X(ix.x.Pm,:);
+delta_PC= X(ix.x.delta_Pc,:);
 theta = Y;
 
 % relative angle
@@ -87,4 +91,5 @@ ps.mac(:,C.ma.omega)   = omega_end;
 ps.mac(:,C.ma.Pm)      = Pm_end;
 ps.mac(:,C.ma.delta_m) = delta_m;
 
-[x_new,y_new] = get_xy_will(ps);
+ps.x = X (:,end);
+ps.y = Y (:,end);

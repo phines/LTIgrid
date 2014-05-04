@@ -21,10 +21,12 @@ omega_pu = omega/ps.frequency/2/pi;%LIBBY ADDED THIS
 for i = 1:length(ACE)    
     x(ix.x.omega) = omega_pu(i,:);
     y = theta(i,:)';
-    ACE(i,:) = get_ACE_temp(x,y,ps);
+    ACE(i,:) = get_ACE_temp(x,y,ps,0);
 end
 
-%ACE = ACE*ps.baseMVA; % convert to MW
+
+
+ACE = ACE*ps.baseMVA; % convert to MW
 interconnect_omega = mean(omega,2)/2/pi - ps.frequency; % convert to Hz
 
 % setup time steps for CPS values
@@ -65,3 +67,4 @@ violations_1 = length(find(CPS2_scores(:,1)>=L10));
 violations_2 = length(find(CPS2_scores(:,2)>=L10));
 CPS2 = [(1 - (violations_1/length(CPS2_scores)))*100 (1 - (violations_2/length(CPS2_scores)))*100]
 
+keyboard

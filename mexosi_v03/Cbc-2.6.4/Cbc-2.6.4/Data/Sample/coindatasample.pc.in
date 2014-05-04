@@ -1,8 +1,0 @@
-prefix=@prefix@
-datadir=@datadir@/coin/Data/Sample
-
-Name: Sample
-Description: Sample models
-Version: @PACKAGE_VERSION@
-Libs:
-Cflags:

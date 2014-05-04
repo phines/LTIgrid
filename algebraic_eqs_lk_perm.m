@@ -24,7 +24,7 @@ delta_mac = delta - theta(mac_bus_i); % the rotor angle, relative to the bus ang
 Pg = delta_mac./Xd; % the generator power, using the DC load flow assumptions
 
 % calculate the nodal power imbalance:
-g = ps.B*theta - sparse(mac_bus_i,1,Pg,n,1) + sparse(D,1,Pd,n,1);
+g = ps.B*theta - sparse(mac_bus_i,1,Pg,n,1) + Pd;%sparse(D,1,Pd,n,1);%CHANGED WHEN CHANGED LOAD STYLE TO ALL BUSES
 % power out through transmission lines - power in from gens + power out through loads = 0
 
 % find dg_dx
@@ -35,3 +35,6 @@ end
 if nargout>2
     dg_dy = ps.B + sparse(mac_bus_i,ix.y.theta(mac_bus_i),+1./Xd,ix.ng,ix.ny);
 end
+% if t>30
+% keyboard
+% end

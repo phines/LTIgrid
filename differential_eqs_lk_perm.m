@@ -15,7 +15,10 @@ function [f,df_dx,df_dy] = differential_eqs_lk_perm(t,x,y,ps,opt)
 %   f(4) -> dPc_dt
 
 
-
+global Pref_check
+global delta_Pref 
+global t_span
+global delta_Pc_lim_check
 %keyboard
 % constants
 C     = psconstants_will;
@@ -38,8 +41,14 @@ Pmax      = ps.gen(:,C.ge.Pmax)/ps.baseMVA;
 Pmin      = ps.gen(:,C.ge.Pmin)/ps.baseMVA;
 reg_up    = ps.gen(:,C.ge.reg_ramp_up)/ps.baseMVA;
 reg_down  = ps.gen(:,C.ge.reg_ramp_down)/ps.baseMVA;
-LCmax     = ps.gov(:,C.gov.LCmax);
-LCmin     = ps.gov(:,C.gov.LCmin);
+LCmax     = ps.gov(:,C.gov.LCmax)/ps.baseMVA/60; % Mw/min->pu/s
+LCmin     = ps.gov(:,C.gov.LCmin)/ps.baseMVA/60; % Mw/min->pu/s
+
+
+% checking Pref setup 
+Pref = Pref_change_V3( Pref, delta_Pref(:,2)/ps.baseMVA, t_span,t );
+Pref_timestamp=[t,Pref'];
+Pref_check = [Pref_check;Pref_timestamp];
 
 % extract differential variables
 delta    = x(ix.x.delta);
@@ -61,30 +70,42 @@ Pg = delta_m./Xd;
 % calculate Pmdot values
 delta_omega_pu = (omega_pu-1);
 
-% PCdot
-ACE = get_ACE_temp(x,y,ps);
-Pc_dot = -K_ace.*ACE;
-
-% for each area, put the appropriate Pc_dot with the machines
-gen_bus_i = ps.bus_i(ps.gen(:,1));
-gen_areas = ps.bus(gen_bus_i,C.bu.area);
-Pc_dot = Pc_dot(gen_areas);
 
 
 % Apply limiter functions
 [ddelta_Pc_lim_ddleta_Pc,delta_Pc_lim] = limiter_cosmic(delta_Pc,reg_up,reg_down); % rate limiter
+% Check delta_Pc_lim
+dPclim_timestamp=[t,delta_Pc_lim'];
+delta_Pc_lim_check = [delta_Pc_lim_check;dPclim_timestamp];
 Pc = Pref + delta_Pc_lim - (omega_pu-1)./R;                % droop and ACE Control
 [dPc_lim_dPc,Pc_lim] = limiter_cosmic(Pc,Pmax,Pmin);                 % rail limiter
 Pm_dot_nolim  = (Pc_lim-Pm)./Tg;                                % governor time constant
 [dPm_dPm1,Pm_dot] = limiter_cosmic(Pm_dot_nolim,LCmax,LCmin);       % rate limiter
 % is dPm_dPm1 really dPmdot_dPmdot_nolim?
 
+% PCdot
+ACE = get_ACE_temp(x,y,ps,0);
+delta_Pc_dot_per_area= -K_ace.*ACE; 
+
+% for each area, put the appropriate Pc_dot with the machines
+gen_bus_i = ps.bus_i(ps.gen(:,1));
+gen_areas = ps.bus(gen_bus_i,C.bu.area);
+delta_Pc_dot_per_gen = delta_Pc_dot_per_area(gen_areas);
+for i =1:length(delta_Pc)
+    if delta_Pc(i)-delta_Pc_lim(i)==0
+        delta_Pc_dot_per_gen(i)=0;
+    end
+end
+        
+
+
 % build the output
 f = zeros(ix.nf,1);
 f(ix.f.delta_dot) = omega_0.*delta_omega_pu;
 f(ix.f.omega_dot) = (Pm - Pg - D.*(omega_pu-1))./M;
 f(ix.f.Pm_dot)    = Pm_dot;
-f(ix.f.Pc_dot)    = Pc_dot;
+f(ix.f.Pc_dot)    = delta_Pc_dot_per_gen;
+
 
 % output df_dx if requested
 if nargout>1
@@ -127,3 +148,6 @@ if nargout>2
         % dFPc_dtheta
     df_dy = get_dFPc_dtheta_Libby(ps,df_dy);
 end
+% if t>48
+%     keyboard
+% end

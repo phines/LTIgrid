@@ -1,7 +1,0 @@
-datadir=@ABSBUILDDIR@
-
-Name: Sample
-Description: Sample models
-Version: @PACKAGE_VERSION@
-Libs:
-Cflags:

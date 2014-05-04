@@ -1,4 +1,4 @@
-function [ACE] = get_ACE_temp(x,y,ps)
+function [ACE] = get_ACE_temp(x,y,ps,~)
 % usage: ACE = get_ACE(x,y,ps)
 
 % constants
@@ -9,7 +9,7 @@ n     = size(ps.bus,1);
 % extract data from ps
 br_status  = ps.branch(:,C.br.status)~=0;
 br_x       = ps.branch(br_status,C.br.X);
-M          = ps.mac(:,C.ma.M);
+%M          = ps.mac(:,C.ma.M);
 B          = ps.areas(:,2);
 nA         = length(ps.tie_lines_F);
 ix         = get_indices_will(n,nmacs);
@@ -20,7 +20,7 @@ gen_bus_i = ps.bus_i(ps.gen(:,1));
 gen_areas = ps.bus(gen_bus_i,C.bu.area);
 
 % setup outputs
-max_gen_omega = zeros(nA,1);
+max_gen_d_omega = zeros(nA,1);
 ACE        = zeros(nA,1);
 
 % extract differential variables
@@ -56,8 +56,14 @@ for i = 1:nA
     % find the max frequency deviation
     gen_subset = (gen_areas==i);
     d_omega_subset   = delta_omega_pu(gen_subset);
-    [Pmax_sub,Pmax_sub_ind] = max(Pmax(gen_subset));
-    max_gen_omega(i) = d_omega_subset(Pmax_sub_ind);
+    [~,Pmax_sub_ind] = max(Pmax(gen_subset));
+    max_gen_d_omega(i) = d_omega_subset(Pmax_sub_ind);
     % calculate ace measurement for each generator
-    ACE(i) = (B(i)*max_gen_omega(i) + Ptie(i)); % add scheduled flow to this...
+    
+%     if flag
+%         ACE(i) = (B(i)*max_gen_d_omega(i));% + Ptie(i)); % add scheduled flow to this...
+%     else 
+        ACE(i) = (B(i)*max_gen_d_omega(i) + Ptie(i)); % add scheduled flow to this...
+end
+    
 end

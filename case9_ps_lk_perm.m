@@ -1,4 +1,4 @@
-function ps = case9_ps
+function ps = case9_ps_lk_perm
 
 ps.baseMVA = 100.000000;
 ps.frequency = 60;
@@ -67,3 +67,9 @@ ps.gencost = [...
  2 3000 0 3 0.1225 1 335;
 ];
 
+ps.gov = [...
+%gen Type  R    Tg   LCmax  LCmin  Pmax  Pmin  Pref
+ 1    1   0.05  1.2    1     -1     2.5   0     0
+ 2    1   0.05  1.0    1     -1     3.0   0     0
+ 3    1   0.05  1.0    1     -1     2.7   0     0
+];
