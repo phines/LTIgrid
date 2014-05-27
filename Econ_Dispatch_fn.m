@@ -95,14 +95,14 @@ for j=1:num_areas
     %% 
     [Pgs,~,~] = linprog(c,A,b,Aeq,beq,lb,ub); 
     loc       = find(gen_areas==j);
-    
+   
     for i=1:num_gens_area
        Pgs_sbs(loc(i),:) = Pgs(i:num_gens_area+2:end);
     end
 
     Rgs_sbs(loc,:) = reg_per_gen;
-    S_plus = Pgs(num_gens_area+1:num_gens_area+2:end);
-    S_minus = Pgs(num_gens_area+2:num_gens_area+2:end);
+    %S_plus = Pgs(num_gens_area+1:num_gens_area+2:end);
+    %S_minus = Pgs(num_gens_area+2:num_gens_area+2:end);
 
     %cmap = hsv(num_gens_area); 
 

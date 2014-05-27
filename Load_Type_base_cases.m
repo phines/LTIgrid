@@ -20,39 +20,30 @@ load_buses      = ps.bus_i(ps.shunt(:,1));
 if Val == 1
     load            = repmat(initial_load,1,tmax);
     load_points     = load';
-    
-    max_load = (max(load'));
-    max_load_area_1 = sum(max_load(bus_areas==1));
-    max_load_area_2 = sum(max_load(bus_areas==2));
     %also, (above) make sure the max of a given time is used, not max of
     %individual loads added together
-    %ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
     
     
 elseif Val == 2
-    timesteps = length(time)
+    timesteps = length(time);
     loadmin = initial_load*0.8;
     loadmax = initial_load*1.2;
 
     loadup  = linspacem(loadmin,loadmax,timesteps/4);
-    loaddown = linspacem(loadmax,loadmin,timesteps/4);
+    %loaddown = linspacem(loadmax,loadmin,timesteps/4);
     %load  = [loadup,loaddown,loadup,loaddown];
     max_load = loadup(:,end);
     load_steady = repmat(max_load,1,timesteps*0.75);
     load   = [loadup,load_steady];
     load_points     = load';
-    
-    max_load = (max(load'));
-    max_load_area_1 = sum(max_load(bus_areas==1));
-    max_load_area_2 = sum(max_load(bus_areas==2));
-    
+ 
     
 elseif Val == 2.1
-    timesteps = length(time)
+    timesteps = length(time);
     loadmin = initial_load*0.8;
     loadmax = initial_load*1.2;
 
-    loadup  = linspacem(loadmin,loadmax,timesteps/4);
+    %loadup  = linspacem(loadmin,loadmax,timesteps/4);
     loaddown = linspacem(loadmax,loadmin,timesteps/4);
     %load  = [loadup,loaddown,loadup,loaddown];
     min_load = loaddown(:,end);
@@ -60,28 +51,20 @@ elseif Val == 2.1
     load   = [loaddown,load_steady];
     load_points     = load';
     
-    max_load = (max(load'));
-    max_load_area_1 = sum(max_load(bus_areas==1));
-    max_load_area_2 = sum(max_load(bus_areas==2));
-    
-    
+ 
 elseif Val == 2.3
-    timesteps = length(time)
+    timesteps = length(time);
     loadmin = initial_load*0.2;
     loadmax = initial_load*5;
 
     loadup  = linspacem(loadmin,loadmax,timesteps/4);
-    loaddown = linspacem(loadmax,loadmin,timesteps/4);
+    %loaddown = linspacem(loadmax,loadmin,timesteps/4);
     %load  = [loadup,loaddown,loadup,loaddown];
     max_load = loadup(:,end);
     load_steady = repmat(max_load,1,timesteps*0.75);
     load   = [loadup,load_steady];
     load_points     = load';
-    
-    max_load = (max(load'));
-    max_load_area_1 = sum(max_load(bus_areas==1));
-    max_load_area_2 = sum(max_load(bus_areas==2));
-    
+
     
 elseif Val == 3
     load_points  = zeros(tmax,length(initial_load));
@@ -89,7 +72,7 @@ elseif Val == 3
     std_light    = zeros(length(initial_load),1);
 
     for i=1:length(initial_load)
-       lp = mrrw(tmax,.01,10,1,1);
+       lp = mrrw(tmax,.001,10,1,0.4);
        load_points(:,i)  = lp*(initial_load(i)/10); %hardcoded for ten in mrrw to be same value we divide by
        var_light(i)      = var(load_points(:,i));
        std_light(i)      = std(load_points(:,i));
@@ -117,13 +100,8 @@ elseif Val == 5
         load(i,:)=load(i,:)+initial_load(i);
     end
     load_points     = load';
+
     
-    max_load = (max(load'));
-    max_load_area_1 = sum(max_load(bus_areas==1));
-    max_load_area_2 = sum(max_load(bus_areas==2));
-    %also, (above) make sure the max of a given time is used, not max of
-    %individual loads added together
-    %ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
 elseif Val == 5.1
       load_change     = initial_load;
     load_shape      = sin(0.0064*time);
@@ -132,14 +110,7 @@ elseif Val == 5.1
         load(i,:)=load(i,:)+initial_load(i);
     end
     load_points     = load';
-    
-    max_load = (max(load'));
-    max_load_area_1 = sum(max_load(bus_areas==1));
-    max_load_area_2 = sum(max_load(bus_areas==2));
-    %also, (above) make sure the max of a given time is used, not max of
-    %individual loads added together
-    %ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
-    
+   
     
 % elseif Val==6
 %     NE_data   = importdata('ISO-NewEngland 5 Minute Total Load.csv');
@@ -167,40 +138,25 @@ elseif Val == 5.1
 
 
 elseif Val==7
-    load_change     = initial_load;
     load            = repmat(initial_load,1,tmax);
     load_points     = load';
     tenpercinc     = initial_load(1)*2;
     rampup          = initial_load(1):5:tenpercinc;
-    flat            = tenpercinc*ones(length(tenpercinc),1);
-    rampdown        = tenpercinc:-1:initial_load(1);
-    change          = [rampup];%,flat,rampdown]';
+    %flat            = tenpercinc*ones(length(tenpercinc),1);
+    %rampdown        = tenpercinc:-1:initial_load(1);
+    change          = rampup;%,flat,rampdown]';
     load_points(10:9+length(change),1)  = change;
     load_points(10+length(change):end,1)=max(change);
     
-    max_load = (max(load'));
-    max_load_area_1 = sum(max_load(bus_areas==1));
-    max_load_area_2 = sum(max_load(bus_areas==2));
-    %also, (above) make sure the max of a given time is used, not max of
-    %individual loads added together
-    %ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
-    
-    
+
 elseif Val==8
-    load_change     = initial_load;
     load            = repmat(initial_load,1,tmax);
     load_points     = load';
-    change_step     = initial_load(1)*1.06;
-    change          = initial_load(1)*1.06;
+    change_step     = initial_load(1)*1.01;
+    change          = initial_load(1)*1.01;
     load_points(30,1)  = change_step;
     load_points(31:end,1)  = change;
     
-    max_load = (max(load'));
-    max_load_area_1 = sum(max_load(bus_areas==1));
-    max_load_area_2 = sum(max_load(bus_areas==2));
-    %also, (above) make sure the max of a given time is used, not max of
-    %individual loads added together
-    %ps.areas(:,C.ar.B)=[round(max_load_area_1*0.01*10);round(max_load_area_2*0.01*10)];
    
 end
 

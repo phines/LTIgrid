@@ -29,7 +29,6 @@ ix       = get_indices_will(nbus,nmacs); % index to help us find stuff
 k = 0.05;
 
 for j=1:length(k)
-    k(j);
     ps        = get_ps_areas_libby(ps,bus_areas,load_buses,total_load,k(j)); %%delete this afer testing
     t_all     = zeros(day_in_s,1);
     theta_all = zeros(day_in_s,nbus);
@@ -40,18 +39,19 @@ for j=1:length(k)
     Pgs_sbs_all   = [];
 
      
-    for i=1:2%day_in_disp_t
+    for i=1:1%day_in_disp_t
         if mod(i,10)==0
-            i
+            disp(i)
         end
         
-        t_range = [1:disp_t_in_s]+disp_t_in_s*(i-1);
+        t_range = 1:disp_t_in_s + disp_t_in_s*(i-1);
+        %t_range = 1:20;
         t_span=[t_range(1)-1,t_range(end)];
         if i==1
             [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_disp_t-1),perc_reg,disp_t_mins);
             %ps.gen(:,C.ge.Pg) = Pgs_sbs(:,1); %Use first time step's optimized Pg's for dcpf
             ps                = dcpf(ps);
-           % ps.gen(:,C.ge.Pg) = Pgs_sbs(:,1);%hshould this be here?!
+            %ps.gen(:,C.ge.Pg) = Pgs_sbs(:,1);%hshould this be here?!
            delta_Pref        = [ps.gen(:,C.ge.Pg),Pgs_sbs(:,2)];
             
             % prepare the machine state variables
@@ -74,7 +74,7 @@ for j=1:length(k)
         
         % Simulate the steady state
        
-        [t,theta,delta,omega,Pm,delta_Pc,ps] = simgrid_lti_lk_perm(ps,t_span,0,i);
+        [t,theta,delta,omega,Pm,delta_Pc,ps] = simgrid_lti_lk_perm(ps,t_span,1,i);
 
         
         theta_sp = spline(t,theta,t_range);
@@ -93,10 +93,12 @@ for j=1:length(k)
     
     % Pref check
     [Pref_check] = unique(Pref_check,'rows');
+    Pref_check   = unique_lk( Pref_check );
     Pref_t = Pref_check(:,1);
     Pref_1 = Pref_check(:,2);
     Pref_2 = Pref_check(:,3);
     [delta_Pc_lim_check] = unique(delta_Pc_lim_check,'rows');
+    [delta_Pc_lim_check] = unique_lk(delta_Pc_lim_check);
     delta_Pc_lim_t = delta_Pc_lim_check(:,1);
     delta_Pc_lim_1 = delta_Pc_lim_check(:,2);
     delta_Pc_lim_2 = delta_Pc_lim_check(:,3);
@@ -182,26 +184,26 @@ for j=1:length(k)
     xlabel('Time (minutes) ')
     ylabel('Load (MW) ')
     
- 
-    t_Pref_line = 0:300:300*i;
-    for k=1:length(t_Pref_line)
-        lk=Pref_check(:,1)==t_Pref_line(k);
-        Preflk=Pref_check(lk,:);
-        Pref_lines(k)=Preflk(end,2);
-    end
-    Pref_linear_int = interp1(t_Pref_line,Pref_lines*ps.baseMVA,Pref_t);
+%  
+%     t_Pref_line = 0:300:300*i;
+%     for k=1:length(t_Pref_line)
+%         lk=Pref_check(:,1)==t_Pref_line(k);
+%         Preflk=Pref_check(lk,:);
+%         Pref_lines(k)=Preflk(end,2);
+%     end
+%     Pref_linear_int = interp1(t_Pref_line,Pref_lines*ps.baseMVA,Pref_t);
 
     figure; hold on;
     plot(t_all_minute,Pm_all.*ps.baseMVA);
     plot(Pref_t/60,Pref_1*ps.baseMVA,'m-')%,'MarkerSize',1)
     plot(Pref_t/60,Pref_2*ps.baseMVA,'r-')%,'MarkerSize',1)
     %plot(Pref_t/60,Pref_linear_int,'g.','MarkerSize',1)
-    plot(t_all_minute,omega_all/3.77)
+    %plot(t_all_minute,omega_all/3.77)
     axis([tmin day_in_s/60 min(min(Pm_all.*ps.baseMVA))-.5 max(max(Pm_all.*ps.baseMVA))+.5])
     set(gca,'FontSize',fontsize)
     xlabel('Time (minutes) ')
     ylabel('Pm (MW) ') 
-    legend('Pm, Area 1','Pm, Area 2','Pref, Area 1','Pref, Area 2','omega','omega2')%,'
+    legend('Pm, Area 2','Pm, Area 2','Pref, Area 1','Pref, Area 2','omega','omega2')%,'
     
     figure; hold on;
     plot(t_all_minute,delta_Pc_all*ps.baseMVA);

@@ -1,4 +1,4 @@
-function [ACE] = get_ACE(x,y,ps)
+function [ACE] = get_ACE_will(x,y,ps)
 % usage: ACE = get_ACE(x,y,ps)
 
 % constants

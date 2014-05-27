@@ -29,32 +29,35 @@ end
 %         error('Something funny happened');
 %     end
 % end
-xy0 = [x0;y0];
-
 
 
 % set up the differential equations
-fg = @(t,xy) differential_algebraic_eqs_lk_perm(t,xy,ps);
+%fg = @(t,xy) differential_algebraic_eqs_lk_perm(t,xy,ps);
 dfg_dxy = @(t,xy) dae_jacobian_lk_perm(t,xy,ps);
 
 % test the differential equations around the current point
 %fg0 = fg(0,xy0);
 
-f=@(t,x,y) differential_eqs_lk_perm(t,x,y,ps);
+f=@(t,x,y) differential_eqs_lk_perm(t,x,y,ps,0);
 g=@(t,x,y) algebraic_eqs_lk_perm(t,x,y,ps);
 
 %% Checkpoint
 if check_stab
-    f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps);
-    f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps);
-    g_x = @(x)algebraic_eqs_lk_perm(0,x,y0,ps);
-    g_y = @(y)algebraic_eqs_lk_perm(0,x0,y,ps);
+    f_x = @(x)differential_eqs_lk_perm(0,x,y0,ps,0);
+    f_y = @(y)differential_eqs_lk_perm(0,x0,y,ps,0);
+    g_x = @(x)algebraic_eqs_lk_perm(0,x,y0,ps,0);
+    g_y = @(y)algebraic_eqs_lk_perm(0,x0,y,ps,0);
     [fcheck,df_dx0,df_dy0] = f_y(y0);
     [gcheck,dg_dx0,dg_dy0] = g_x(x0);
     [gcheck2,dg_dx0,dg_dy0] = g_y(y0);
     k=ps.areas(1,1);
-    [max_real_evals_full,num_pos_evals]=stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0,ps);
-    %checkDerivatives(g_y, dg_dy0,y0);
+    
+   % [max_real_evals_full,num_pos_evals]=stability_check(df_dx0,df_dy0,dg_dx0,dg_dy0,ps);
+    checkDerivatives(g_y, dg_dy0,y0);
+    checkDerivatives(g_x, dg_dx0,x0);
+    checkDerivatives(f_x, df_dx0,x0);
+    checkDerivatives(f_y, df_dy0,y0);
+    
 end
 
 %% ODE
@@ -66,16 +69,16 @@ odeopts = odeset('Mass',mass_mat,...
                  'Jacobian',dfg_dxy);
 
 % solve the ode's
-[t,X,Y] = solve_dae(f,g,[],[],x0,y0,tspan);%odeopts);
+[t,X,Y] = solve_dae(f,g,[],[],x0,y0,tspan,ps);%odeopts);
 
 % extract the data from XY
 % X = XY(:,1:ix.nx);
 % Y = XY(:,(1:ix.ny) + ix.nx);
-delta = X(ix.x.delta,:);
-omega = X(ix.x.omega_pu,:) * omega_0; 
-Pm =    X(ix.x.Pm,:);
-delta_PC= X(ix.x.delta_Pc,:);
-theta = Y;
+delta    = X(ix.x.delta,:);
+omega    = X(ix.x.omega_pu,:) * omega_0; 
+Pm       = X(ix.x.Pm,:);
+delta_PC = X(ix.x.delta_Pc,:);
+theta    = Y;
 
 % relative angle
 theta_end = theta(:,end);

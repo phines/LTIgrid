@@ -6,6 +6,6 @@ demand_area_1 = sum(total_load(load_buses(bus_areas==1),:),1);
 demand_area_2 = sum(total_load(load_buses(bus_areas==2),:),1);
 B = [round(max(demand_area_1)*0.01*10);round(max(demand_area_2)*0.01*10)];%% look at thesis for how to calculate
 B_pu = B/ps.baseMVA*ps.frequency; %B=Mw/Hz*60Hz/100MW=puP/pufreq
-ps.areas = [K B];
+ps.areas = [K B_pu];
 
 %% see figure 3.4, will's thesis

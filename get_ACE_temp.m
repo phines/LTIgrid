@@ -10,7 +10,7 @@ n     = size(ps.bus,1);
 br_status  = ps.branch(:,C.br.status)~=0;
 br_x       = ps.branch(br_status,C.br.X);
 %M          = ps.mac(:,C.ma.M);
-B          = ps.areas(:,2);
+B_pu       = ps.areas(:,2);
 nA         = length(ps.tie_lines_F);
 ix         = get_indices_will(n,nmacs);
 Pmax       = ps.gen(:,C.ge.Pmax);
@@ -43,7 +43,7 @@ for i = 1:nA
         flow_out = (theta(F) -theta(T)) ./ br_x(tie_lines_from);
     end
     
-    % then get the flow on the time lines out
+    % then get the flow on the tie lines out
     tie_lines_to = ps.tie_lines_T{i}(:);
     if isempty(tie_lines_to)
         flow_in = 0;
@@ -60,10 +60,12 @@ for i = 1:nA
     max_gen_d_omega(i) = d_omega_subset(Pmax_sub_ind);
     % calculate ace measurement for each generator
     
+    Ptie_compare = get_Ptie(theta,ps);
+    
 %     if flag
 %         ACE(i) = (B(i)*max_gen_d_omega(i));% + Ptie(i)); % add scheduled flow to this...
 %     else 
-        ACE(i) = (B(i)*max_gen_d_omega(i) + Ptie(i)); % add scheduled flow to this...
+        ACE(i) = (B_pu(i)*max_gen_d_omega(i) + Ptie(i)); % add scheduled flow to this...
 end
-    
+%keyboard
 end

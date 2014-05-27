@@ -1,0 +1,367 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Economic Dispatch Explanation
+\end_layout
+
+\begin_layout Standard
+Economic dispatch is used to find the optimal combination of generator output
+ with respect to cost, under a number of constraints.
+ Specifically, we wish to find the 
+\begin_inset Formula $P_{g_{i}}$
+\end_inset
+
+ to minimize 
+\begin_inset Formula 
+\[
+C_{T}=\sum_{k=1}^{n_{k}}\sum_{i=1}^{n_{g}}C_{Gi}(P_{Gi}(t_{k}))+C_{S}S_{+}(t_{k})-C_{S}S_{-}(t_{k})
+\]
+
+\end_inset
+
+ the total cost to run each of these generators at the optimal setpoint
+ over the time horizon, such that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(1)\quad\sum_{i=1}^{n_{g}}P_{Gi}(t_{k})+S_{+}(t_{k})+S_{-}(t_{k})=P_{D_{T}}(t_{k}),
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(2)\quad P_{Gi}^{min}+R_{i}\leq P_{Gi}(t_{k})\leq P_{Gi}^{max}-R_{i},\;\forall i,k.
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+(3)\quad RR_{Di}\leq P_{Gi}(t_{k})-P_{Gi}(t_{k-1})\leq RR_{Ui},\;\forall i,k,
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+(4)\quad S_{+}(t_{k})>0,\,\forall k,
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(5)\quad S_{-}(t_{k})<0,\,\forall k.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The variables in the equations above are defined in the table below.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Symbol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Represents
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $C_{G_{i}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cost of running generator 
+\begin_inset Formula $i$
+\end_inset
+
+ as a function of the power output
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $P_{G_{i}}(t_{k})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Amount of power provided by generator 
+\begin_inset Formula $i$
+\end_inset
+
+ at time 
+\begin_inset Formula $t_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $P_{D_{T}}(t_{k})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Amount of total load on the system at time 
+\begin_inset Formula $t_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $R_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Amount of regulation provided by generator 
+\begin_inset Formula $i$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $RR_{D_{i}},\ RR_{U_{i}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Maximum ramp rate down (D) and ramp rate up (U) for generator 
+\begin_inset Formula $i$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{+},\; S_{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Soft constraint
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Constraint (1) is our equilibrium constraint; it states that the sum of
+ the power generation must be equal to the load, with the soft constraint
+ included in case the rest of the constraints prohibit this at a given point
+ (though with an extremely high cost 
+\begin_inset Formula $C_{S}$
+\end_inset
+
+ such that the soft constraint is only employed when no other solution is
+ possible).
+ Constraint (2) places an upper and lower limit on the setpoint of the generator
+, using the generator's maximum (minimum) and shifting down (up) by the
+ amount of regulation the generator must provide; in this way, we ensure
+ each generator will be able to provide the necessary regulation without
+ being told to go outside its physical limits.
+ Constraint (3) also implements a physical generator limit, instead on the
+ speed with which a generator can change its output (known as the ramp rate).
+ Constraints (4) and (5) ensure the soft constraints stay respectively above
+ or below 0(WHYY?).
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document

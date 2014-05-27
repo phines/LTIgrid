@@ -1,4 +1,4 @@
-function ps_large = replicate_case_parallel(ps_small,S)
+function ps_large = replicate_case_parallel_gencost_change(ps_small,S)
 % usage: ps_large = replicate_case(ps_small,S)
 % replicates a ps case within a matrix in order to obtain a larger ps case
 C = psconstants_will;

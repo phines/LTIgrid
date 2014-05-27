@@ -55,6 +55,6 @@ ps.gencost = [...
 
 ps.gov = [...
 %gen Type  R    Tg   LCmax  LCmin  Pmax  Pmin  Pref
- 1    1   0.05  1.2    1     -1     2.5   0     0
- 2    1   0.05  1.0    1     -1     3.0   0     0
+ 10    1   0.05  1.2    1     -1     2.5   0     0
+ 20    1   0.05  1.0    1     -1     3.0   0     0
 ];

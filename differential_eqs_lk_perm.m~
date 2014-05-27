@@ -1,4 +1,4 @@
-function [f,df_dx,df_dy] = differential_eqs_lk_perm(t,x,y,ps,opt)
+function [f,df_dx,df_dy] = differential_eqs_lk_perm(t,x,y,ps,Pref_opt,~)
 % usage: [f,df_dx,df_dy] = differential_eqs(t,x,y,ps,opt)
 % differential equation that models the elements of the power system
 %
@@ -25,14 +25,14 @@ C     = psconstants_will;
 nmacs = size(ps.mac,1);
 n     = size(ps.bus,1);
 ix    = get_indices_will(n,nmacs);
-
+nA    = length(ps.tie_lines_F);
 
 % extract data from ps
 Xd        = ps.mac(:,C.ma.Xd);
 %Xq       = ps.mac(:,C.ma.Xq);
 D         = ps.mac(:,C.ma.D);
 M         = ps.mac(:,C.ma.M);
-omega_0   = 2*pi*ps.frequency; %why is this times 2pi if we do everything in pu and dont use 2pi elsewhere
+omega_0   = 2*pi*ps.frequency; 
 Tg        = ps.mac(:,C.ma.Tg); 
 R         = ps.mac(:,C.ma.R);
 K_ace     = ps.areas(:,C.ar.K);
@@ -46,9 +46,12 @@ LCmin     = ps.gov(:,C.gov.LCmin)/ps.baseMVA/60; % Mw/min->pu/s
 
 
 % checking Pref setup 
+if Pref_opt
 Pref = Pref_change_V3( Pref, delta_Pref(:,2)/ps.baseMVA, t_span,t );
+end
 Pref_timestamp=[t,Pref'];
 Pref_check = [Pref_check;Pref_timestamp];
+
 
 % extract differential variables
 delta    = x(ix.x.delta);
@@ -74,6 +77,7 @@ delta_omega_pu = (omega_pu-1);
 
 % Apply limiter functions
 [ddelta_Pc_lim_ddleta_Pc,delta_Pc_lim] = limiter_cosmic(delta_Pc,reg_up,reg_down); % rate limiter
+
 % Check delta_Pc_lim
 dPclim_timestamp=[t,delta_Pc_lim'];
 delta_Pc_lim_check = [delta_Pc_lim_check;dPclim_timestamp];
@@ -84,22 +88,41 @@ Pm_dot_nolim  = (Pc_lim-Pm)./Tg;                                % governor time 
 % is dPm_dPm1 really dPmdot_dPmdot_nolim?
 
 % PCdot
-% if t>30
-%     keyboard
-% end
+
 ACE = get_ACE_temp(x,y,ps,0);
 delta_Pc_dot_per_area= -K_ace.*ACE; 
 
 % for each area, put the appropriate Pc_dot with the machines
 gen_bus_i = ps.bus_i(ps.gen(:,1));
 gen_areas = ps.bus(gen_bus_i,C.bu.area);
-delta_Pc_dot_per_gen = delta_Pc_dot_per_area(gen_areas);
-for i =1:length(delta_Pc)
-    if delta_Pc(i)-delta_Pc_lim(i)==0
-        delta_Pc_dot_per_gen(i)=0;
-    end
+delta_Pc_dot_per_gen = zeros(nmacs,1);
+
+for i=1:nA
+    delta_Pc_dot_per_gen (gen_areas==i)=delta_Pc_dot_per_area(i);  
+%     area_delta_Pc_dot = delta_Pc_dot_per_area(i);
+%     Pmax_area = Pmax(gen_areas==i);
+%     sum_Pmax_area=sum(Pmax_area);
+%     delta_Pc_dot_per_gen(gen_areas==i) = area_delta_Pc_dot*Pmax_area/sum_Pmax_area;
 end
-        
+% if t>20
+% keyboard
+% end
+dPcdotlim_dPcdot=ones(nmacs,1);
+[ delta_Pc_dot_lim,dPcdotlim_dPcdot ] = Pcsplinetrial_V2( delta_Pc,delta_Pc_dot,reg_up,reg_down,1);
+% for i =1:length(delta_Pc)
+%     %if delta_Pc(i)-delta_Pc_lim(i)~=0
+%     if abs(delta_Pc(i)-delta_Pc_lim(i))>0.0001 %determine whether limit is being enacted
+%         if delta_Pc(i)>delta_Pc_lim(i) && delta_Pc_dot_per_gen(i)>0 %positive delta_Pc case, want it to move negatively
+%             dPcdotlim_dPcdot(i)=0;
+%             delta_Pc_dot_per_gen(i)=0;
+%         elseif delta_Pc(i)<delta_Pc_lim(i) && delta_Pc_dot_per_gen(i)<0 %negative delta_Pc, want it to move positively
+%             dPcdotlim_dPcdot(i)=0;
+%             delta_Pc_dot_per_gen(i)=0;
+%         end
+%     end
+% end
+%         
+
 
 
 % build the output
@@ -120,8 +143,12 @@ if nargout>1
     dFPm_dot_dPc_values   = (1./Tg).*ddelta_Pc_lim_ddleta_Pc.*dPc_lim_dPc.*dPm_dPm1; %Is this actually dPC or ddeltaPC?
     dFPm_dPm_values       = (-1./Tg).*dPm_dPm1; %confused about how to tell what this one is
     dFPm_domega_values    = (-1./R).*(1./Tg).*dPc_lim_dPc.*dPm_dPm1;
-
-    [dFPc_domega_values,dFPc_domega_cols,dFPc_domega_rows] = get_dFPc_domega_libby(ps);
+%     if t>18
+%         keyboard
+%     end
+%     
+    [dFPc_domega_values,dFPc_domega_cols,dFPc_domega_rows] = get_dFPc_domega_libby(ps,dPcdotlim_dPcdot);
+    dFPc_domega_values=dFPc_domega_values;%.*dPcdotlim_dPcdot;
     % build df_dx
     df_dx = sparse(ix.nx,ix.nx);
     % dFswing_ddelta
@@ -149,5 +176,23 @@ if nargout>2
     cols = ix.y.theta(mac_bus_i);
     df_dy = sparse(ix.f.swing,cols,-dPg_dtheta./M,ix.nx,ix.ny);
         % dFPc_dtheta
-    df_dy = get_dFPc_dtheta_Libby(ps,df_dy);
+    df_dy = get_dPcdot_dtheta(ps,df_dy,dPcdotlim_dPcdot);
+       % df_dy = get_dFPc_dtheta_Libby(ps,df_dy);
+    
 end
+% 
+% if t>18
+% keyboard
+%     f_x = @(x_check)differential_eqs_lk_perm(0,x_check,y,ps,0); %had 0 instead of t before
+%     f_y = @(y_check)differential_eqs_lk_perm(0,x,y_check,ps,0);
+%     g_x = @(x_check)algebraic_eqs_lk_perm(0,x_check,y,ps,0);
+%     g_y = @(y_check)algebraic_eqs_lk_perm(0,x,y_check,ps,0);
+%     [fcheck,df_dx0,df_dy0] = f_y(y);
+%     [gcheck,dg_dx0,dg_dy0] = g_x(x);
+%     [gcheck2,dg_dx0,dg_dy0] = g_y(y);
+%   
+%     checkDerivatives(g_y, dg_dy0,y);
+%     checkDerivatives(g_x, dg_dx0,x);
+%     checkDerivatives(f_x, df_dx0,x);
+%     checkDerivatives(f_y, df_dy0,y);
+% end

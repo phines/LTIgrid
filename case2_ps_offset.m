@@ -19,7 +19,7 @@ ps.branch = [...
 
 ps.gen = [...
 %bus Pg Qg Qmax Qmin Vsp mBase status Pmax Pmin mu_Px mu_Pn mu_Qx mu_Qn type cost 
- 10 110 80 300 -300 1.04 100 1 250 10 0 0 0 0 3 5 1;
+ 10 101.5 80 300 -300 1.04 100 1 250 10 0 0 0 0 3 5 1;
  20 100  10 300 -300 1.025 100 1 300 10 0 0 0 0 2 1.2 0;
 
 ];
@@ -27,7 +27,7 @@ ps.gen = [...
 ps.shunt = [...
 %bus P Q frac_S frac_Z status type value 
  10 100 50 1 0 1 1 1000 0; %125 normally
- 20 110 30 1 0 1 1 1000 0;
+ 20 101.5 30 1 0 1 1 1000 0;
  
 ];
 

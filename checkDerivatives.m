@@ -39,4 +39,6 @@ disp('-----------------------------------------------');
 fprintf('Found %d suspicious derivatives\n',n_errs);
 fprintf('Worst error magnitude: %e\n',worst_err);
 disp('-----------------------------------------------');
-
+if n_errs>0
+keyboard
+end

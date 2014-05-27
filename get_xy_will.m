@@ -1,4 +1,4 @@
-function [x y] = get_xy(ps)
+function [x,y] = get_xy_will(ps)
 % usage: [x,y] = get_xy(ps)
 % this function gets the x and y vectors from the data in ps
 % this is used for the simple/LTI grid model

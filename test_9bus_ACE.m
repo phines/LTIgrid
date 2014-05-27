@@ -2,23 +2,23 @@
 % clear all
 
 global Load_spline
-global t_span
-global delta_Pref
+%global t_span
+%global delta_Pref
 C = psconstants_will;
 
 ps = case9_ps_lk_perm; % get the real one? K SHOULD BE 0.151, CHECK IT
 ps = updateps(ps);
 
 %% set up a necessity for ACE
-ps.shunt(:,C.sh.P)=[125;86;99]
+ps.shunt(:,C.sh.P)=[125;86;99];
 
 %% Set up 2 area, 39bus per area case. 
 
-reg                      = 0.05*ones(length(ps.gov(:,1)),1)
+reg                      = 0.05*ones(length(ps.gov(:,1)),1);
 %reg_gen34                = 0
 %reg(4)                   = reg_gen34
 %reg(5)=reg_gen34
-ps.gov(:,C.gov.R)        = ps.gen(:,C.ge.Pmax).*reg/ps.baseMVA % reg constant is 5% of Pmax p.u. instead of 5% of value multiplied by
+ps.gov(:,C.gov.R)        = ps.gen(:,C.ge.Pmax).*reg/ps.baseMVA; % reg constant is 5% of Pmax p.u. instead of 5% of value multiplied by
 ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
 ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
 
@@ -55,11 +55,10 @@ ps.shunt(:,C.sh.P) = total_load(:,1);
 
 %% Run time horizon sim
 %k=[0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2];
-k=[0.01,0.02,0.05,0.1,0.2];
-k=[0.05];
+%k=[0.01,0.02,0.05,0.1,0.2];
+k = 0.05;
 
 for j=1:length(k)
-    k(j)
     ps        = get_ps_areas_libby(ps,bus_areas,load_buses,total_load,k(j)); %%delete this afer testing
     t_all     = zeros(day_in_s,1);
     theta_all = zeros(day_in_s,nbus);
@@ -76,10 +75,10 @@ for j=1:length(k)
 %     
     for i=1:1%day_in_5min
         if mod(i,10)==0
-            i
+            disp(i)
         end
         
-        t_range = [1:fivemin_in_s]+fivemin_in_s*(i-1);
+        t_range = 1:fivemin_in_s + fivemin_in_s*(i-1);
         
         if i==1
             % Set up x0/y0 by running one time step of ED to get PGs
@@ -125,7 +124,7 @@ for j=1:length(k)
     
     %% do some plots
     %close all
-    day_in_s=i*300 %GETRIDOFTHIS
+    day_in_s=i*300; %GETRIDOFTHIS
     subplot_row = 2;
     subplot_col = 2;
     fontsize = 16;

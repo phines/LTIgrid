@@ -262,7 +262,7 @@ Lastly, we want to include the regulation amount into the constraints, resulting
  in 
 \begin_inset Formula 
 \[
-C_{T}=\sum_{k=1}^{n_{k}}\sum_{i=1}^{n_{g}}C_{Gi}(P_{Gi}(t_{k}))+C_{S}S_{+}(t_{k})-C_{S}S_{-}(t_{k})+C_{Ri}R_{i}(t_{k}),
+C_{T}=\sum_{k=1}^{n_{k}}\sum_{i=1}^{n_{g}}C_{Gi}(P_{Gi}(t_{k}))+C_{S}S_{+}(t_{k})-C_{S}S_{-}(t_{k})
 \]
 
 \end_inset

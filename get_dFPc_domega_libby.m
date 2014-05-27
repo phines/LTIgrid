@@ -1,4 +1,4 @@
-function [dFPc_domega_values,dFPc_domega_cols, dFPc_domega_rows] = get_dFPc_domega_libby(ps)
+function [dFPc_domega_values,dFPc_domega_cols, dFPc_domega_rows] = get_dFPc_domega_libby(ps,dPcdotlim_dPcdot)
 % usage: [dFPc_domega,ix_omega_weighted Pc_dot_weighted] = get_dFPc_domega(ps)
 
 % constants
@@ -7,7 +7,6 @@ nmacs = size(ps.mac,1);
 n     = size(ps.bus,1);
 
 % extract data from ps
-M    = ps.mac(:,C.ma.M); % machine inertia
 B    = ps.areas(:,2);    % frequency bias
 K    = ps.areas(:,1);    % generator participation factor
 nA   = length(ps.tie_lines_F); % number of areas
@@ -31,15 +30,16 @@ dFPc_domega_values = zeros(nvals,1);
 dFPc_domega_rows   = [];
 dFPc_domega_cols   = [];
 
-% calculate differential valus and jacobian locations
+% calculate differential values and jacobian locations
 spot = 0;
 for i = 1:nA
     gen_subset = (gen_areas==i); % find the generators in this area
     nmacs_area = sum(gen_subset); % figure out how many gens here
-
+    lim_scale_a  = dPcdotlim_dPcdot(gen_subset);
     K_area = K(i); % generator participation factors for area
     B_area = B(i); % frequency bias for area i
     dPc_ddelta_omega = -K_area*B_area;
+   
 
 %     dHz_domega_pu = ps.frequency;
 %     dPc_pu_dPc_MW = 1/ps.baseMVA;
@@ -50,7 +50,7 @@ for i = 1:nA
     [~,Pmax_sub_ind] = max(Pmax(gen_subset));
     for k = 1:nmacs_area
         spot=spot+1;
-        dFPc_domega_values(spot) = dFPc_domega;
+        dFPc_domega_values(spot) = dFPc_domega*lim_scale_a(Pmax_sub_ind);
     end
    
     omega_cols = repmat(omega_cols(Pmax_sub_ind),1,length(omega_cols));

@@ -1,4 +1,4 @@
-function [dP22_dP2,P22] = limiter(P2,Pmax,Pmin)
+function [dP22_dP2,P22] = limiter_cosmic(P2,Pmax,Pmin)
 % This function simulates a limiter with Pmin and Pmax as the upper
 % and lower limits. The function can be used as a rate limiter. In
 % that case, the input should be the derivative of some variable.

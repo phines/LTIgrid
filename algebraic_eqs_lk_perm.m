@@ -35,6 +35,3 @@ end
 if nargout>2
     dg_dy = ps.B + sparse(mac_bus_i,ix.y.theta(mac_bus_i),+1./Xd,ix.ng,ix.ny);
 end
-% if t>30
-% keyboard
-% end

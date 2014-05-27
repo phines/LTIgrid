@@ -8,8 +8,8 @@ ps = case39_ps_will;
 ps = replicate_case_parallel_gencost_change(ps,2); %CHANGED 
 ps = updateps(ps);
 ps.bus(40:end,C.bu.area) = 2;
-reg                      = 0.05*ones(length(ps.gov(:,1)),1)
-ps.gov(:,C.gov.R)        = ps.gen(:,C.ge.Pmax).*reg/ps.baseMVA % reg constant is 5% of Pmax p.u. instead of 5% of value multiplied by
+reg                      = 0.05*ones(length(ps.gov(:,1)),1);
+ps.gov(:,C.gov.R)        = ps.gen(:,C.ge.Pmax).*reg/ps.baseMVA; % reg constant is 5% of Pmax p.u. instead of 5% of value multiplied by
 ps.mac(:,C.ma.Tg)        = ps.gov(:,C.gov.Tg);
 ps.mac(:,C.ma.R)         = ps.gov(:,C.gov.R);
 

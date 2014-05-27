@@ -1,4 +1,4 @@
-function [dFPc_domega_values,dFPc_domega_cols, dFPc_domega_rows] = get_dFPc_domega(ps)
+function [dFPc_domega_values,dFPc_domega_cols, dFPc_domega_rows] = get_dFPc_domega_will(ps)
 % usage: [dFPc_domega,ix_omega_weighted Pc_dot_weighted] = get_dFPc_domega(ps)
 
 % constants

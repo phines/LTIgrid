@@ -30,10 +30,10 @@ for j=1:length(k)
 
     for i=1:6
         if mod(i,10)==0
-            i
+            disp(i)
         end
         
-        t_range = [1:disp_t_in_s]+disp_t_in_s*(i-1);
+        t_range = 1:disp_t_in_s + disp_t_in_s*(i-1);
         t_span=[t_range(1)-1,t_range(end)];
         if i==1
             [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_disp_t-1),perc_reg,disp_t_mins);
@@ -60,7 +60,7 @@ for j=1:length(k)
         
         % Simulate the steady state
         
-        [t,theta,delta,omega,Pm,delta_Pc,ps] = simgrid_lti_lk_perm(ps,t_span,0,i);
+        [t,theta,delta,omega,Pm,delta_Pc,ps] = simgrid_lti_lk_perm(ps,t_span,1,i);
 
         
         theta_sp = spline(t,theta,t_range);

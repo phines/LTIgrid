@@ -29,7 +29,6 @@ ix       = get_indices_will(nbus,nmacs); % index to help us find stuff
 k = 0.05;
 
 for j=1:length(k)
-    k(j);
     ps        = get_ps_areas_libby(ps,bus_areas,load_buses,total_load,k(j)); %%delete this afer testing
     t_all     = zeros(day_in_s,1);
     theta_all = zeros(day_in_s,nbus);
@@ -42,10 +41,10 @@ for j=1:length(k)
      
     for i=1:4%day_in_disp_t
         if mod(i,10)==0
-            i
+            disp(i)
         end
         
-        t_range = [1:disp_t_in_s]+disp_t_in_s*(i-1);
+        t_range = 1:disp_t_in_s+disp_t_in_s*(i-1);
         t_span=[t_range(1)-1,t_range(end)];
         if i==1
             [Pgs_sbs,Rgs_sbs] = Econ_Dispatch_fn(ps,total_load(:,i:i+day_in_disp_t-1),perc_reg,disp_t_mins);

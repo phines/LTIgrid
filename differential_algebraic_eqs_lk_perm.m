@@ -1,4 +1,4 @@
-function [fg,dfg_dxy] = differential_algebraic_eqs(t,xy,ps,opt)
+function [fg,dfg_dxy] = differential_algebraic_eqs_lk_perm(t,xy,ps,opt)
 % this is the main set of DAEs that define out problem
 % usage: [fg,dfg_dxy] = differential_algebraic_eqs(t,xy,ps)
 

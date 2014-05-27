@@ -664,6 +664,14 @@ R_{T}(n_{k})
 \end_layout
 
 \begin_layout Standard
+Note: Zeros replaced with 
+\begin_inset Formula $\circ$
+\end_inset
+
+ to aid visual.
+\end_layout
+
+\begin_layout Standard
 The following is an examples in which we have 2 generators and 4 time steps.
  The 
 \begin_inset Quotes eld
@@ -902,6 +910,49 @@ R_{T}(4)
 \end_inset
 
  to increase the usefulness of the visual.
+\end_layout
+
+\begin_layout Standard
+An example of the information produced using this example in linprog is
+ seen in figue 1.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 2gen4time_ex.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+2 gen, 4 time step example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

@@ -1,0 +1,41 @@
+clear all; close all;
+% load some data
+ps = case9_ps; % get the real one?
+ps = updateps(ps);
+ps = dcpf(ps); % dc power flow
+ps.mac = get_mac_state(ps,'linear');
+n = size(ps.bus,1);
+ng = size(ps.gen,1);
+ix = get_indices(n,ng);
+
+[x,y] = get_xy(ps);
+t = 0;
+
+%% test the diffferntial equations to see if the systems is in steady state
+disp('Testing the differential equations');
+[f,df_dx,df_dy] = differential_eqs(t,x,y,ps);
+
+if any(abs(f)>1e-6)
+    error(' System is not in steady state');
+else
+    disp(' Differential equations/state look good');
+end 
+
+%% test the algebraic equations to see if they give zero to start with
+disp('Testing the algebraic equations');
+[g,dg_dx,dg_dy] = algebraic_eqs(t,x,y,ps);
+
+if any(abs(g)>1e-6)
+    error(' Algebraic system is not in balance');
+else
+    disp(' Algebraic equations/state look good');
+end
+
+%% test the derivatives
+disp('Testing the derivatives');
+
+fg_handle = @(xy) differential_algebraic_eqs(t,xy,ps);
+dfg_dxy+
+
+[fg,dfg_dxy] = fg_handle([x;y]);
+checkDerivatives(fg_handle,[],[x;y]);

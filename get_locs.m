@@ -1,4 +1,4 @@
-function [genloc loadloc windloc] = get_locs(ps,wind_buses)
+function [genloc, loadloc, windloc] = get_locs(ps,wind_buses)
 %%why not use persistent C here?
 m = max(ps.bus(:,1));			   
 nodes = ones(m,1);

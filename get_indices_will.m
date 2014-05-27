@@ -1,4 +1,4 @@
-function index = get_indices(n_bus,n_macs)
+function index = get_indices_will(n_bus,n_macs)
 % usage: index = get_indices(n_bus,n_macs)
 % produces a structure that helps us to know where stuff is in x,y,f,g
 
