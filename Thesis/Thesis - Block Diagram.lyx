@@ -396,6 +396,17 @@ As noted above, a number of limits must be applied to the outputs, which
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula 
+\[
+P_{p_{1}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \align center
 \begin_inset Graphics
 	filename /Users/Libby/Downloads/Block Diagram (3).png

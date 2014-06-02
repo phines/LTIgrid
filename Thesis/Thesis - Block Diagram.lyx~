@@ -377,7 +377,7 @@ As noted above, a number of limits must be applied to the outputs, which
 \begin_inset Formula $\dot{P}_{m}$
 \end_inset
 
- to ensure that the generator ramping does not occur faster than is phsycially
+ to ensure that the generator ramping does not occur faster than is physically
  possible; a given generator can only change its output so quickly.
  Lastly, we apply a limit to 
 \begin_inset Formula $\triangle\dot{P}_{c}$

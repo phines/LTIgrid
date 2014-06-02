@@ -2,6 +2,8 @@
 clc
 clear all
 
+Pref_opt = 0; %turn off/on Pref linear tracking over EDs
+
 global Load_spline
 global Pref_check
 global delta_Pref
@@ -39,7 +41,7 @@ for j=1:length(k)
     Pgs_sbs_all   = [];
 
      
-    for i=1:1%day_in_disp_t
+    for i=1:2%day_in_disp_t
         if mod(i,10)==0
             disp(i)
         end
@@ -74,7 +76,7 @@ for j=1:length(k)
         
         % Simulate the steady state
        
-        [t,theta,delta,omega,Pm,delta_Pc,ps] = simgrid_lti_lk_perm(ps,t_span,1,i);
+        [t,theta,delta,omega,Pm,delta_Pc,ps] = simgrid_lti_lk_perm(ps,t_span,1,i,Pref_opt);
 
         
         theta_sp = spline(t,theta,t_range);

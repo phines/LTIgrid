@@ -17,7 +17,12 @@ for i=1:nx
         %xyz(count,:)=[delta_Pc_curr,delta_Pc_dot_curr,delta_Pc_dot_lim_curr];
         count=count+1;
     end
+    h=1;
+    f=delta_Pc_dot_lim(i,:);
+    dPcdotlim_dPc(i,:) = diff(f)/h; 
 end
+
+
 %%
 % delta_Pc_p=xyz(:,1);
 % delta_Pc_dot_p=xyz(:,2);

@@ -108,7 +108,8 @@ end
 % keyboard
 % end
 
-[ delta_Pc_dot_lim,dPcdotlim_dPcdot ] = Pcsplinetrial_V2( delta_Pc,delta_Pc_dot_per_gen,reg_up,reg_down,10);
+
+[delta_Pc_dot_per_gen_lim,dPcdotlim_dPcdotomega,dPcdotlim_dPcdotPc,dPcdotlim_dPcdottheta] = Pcsplinetrial_V3( delta_Pc,delta_Pc_dot_per_gen,reg_up,reg_down);
 % for i =1:length(delta_Pc)
 %     %if delta_Pc(i)-delta_Pc_lim(i)~=0
 %     if abs(delta_Pc(i)-delta_Pc_lim(i))>0.0001 %determine whether limit is being enacted
@@ -130,7 +131,7 @@ f = zeros(ix.nf,1);
 f(ix.f.delta_dot) = omega_0.*delta_omega_pu;
 f(ix.f.omega_dot) = (Pm - Pg - D.*(omega_pu-1))./M;
 f(ix.f.Pm_dot)    = Pm_dot;
-f(ix.f.Pc_dot)    = delta_Pc_dot_per_gen;
+f(ix.f.Pc_dot)    = delta_Pc_dot_per_gen_lim;%delta_Pc_dot_per_gen;
 % if t>2
 % keyboard
 % end
@@ -144,11 +145,11 @@ if nargout>1
     dFPm_dot_dPc_values   = (1./Tg).*ddelta_Pc_lim_ddleta_Pc.*dPc_lim_dPc.*dPm_dPm1; %Is this actually dPC or ddeltaPC?
     dFPm_dPm_values       = (-1./Tg).*dPm_dPm1; %confused about how to tell what this one is
     dFPm_domega_values    = (-1./R).*(1./Tg).*dPc_lim_dPc.*dPm_dPm1;
-    if t>20
-        keyboard
-    end
+%     if t>20
+%         keyboard
+%     end
 %     
-    [dFPc_domega_values,dFPc_domega_cols,dFPc_domega_rows] = get_dFPc_domega_libby(ps,dPcdotlim_dPcdot);
+    [dFPc_domega_values,dFPc_domega_cols,dFPc_domega_rows] = get_dFPc_domega_libby(ps,dPcdotlim_dPcdotomega);
     dFPc_domega_values=dFPc_domega_values;%.*dPcdotlim_dPcdot;
     % build df_dx
     df_dx = sparse(ix.nx,ix.nx);
@@ -177,7 +178,7 @@ if nargout>2
     cols = ix.y.theta(mac_bus_i);
     df_dy = sparse(ix.f.swing,cols,-dPg_dtheta./M,ix.nx,ix.ny);
         % dFPc_dtheta
-    df_dy = get_dPcdot_dtheta(ps,df_dy,dPcdotlim_dPcdot);
+    df_dy = get_dPcdot_dtheta(ps,df_dy,dPcdotlim_dPcdottheta);
        % df_dy = get_dFPc_dtheta_Libby(ps,df_dy);
     
 end

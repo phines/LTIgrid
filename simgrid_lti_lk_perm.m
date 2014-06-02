@@ -1,4 +1,4 @@
-function [t,theta,delta,omega,Pm,delta_PC, ps] = simgrid_lti_lk_perm(ps,tspan,check_stab,k)
+function [t,theta,delta,omega,Pm,delta_PC, ps] = simgrid_lti_lk_perm(ps,tspan,check_stab,k,Pref_opt)
 % NOTE THAT THIS FUNCTION IS NOT WORKING YET...
 %EPS = 1e-6;
 
@@ -38,7 +38,7 @@ dfg_dxy = @(t,xy) dae_jacobian_lk_perm(t,xy,ps);
 % test the differential equations around the current point
 %fg0 = fg(0,xy0);
 
-f=@(t,x,y) differential_eqs_lk_perm(t,x,y,ps,0);
+f=@(t,x,y) differential_eqs_lk_perm(t,x,y,ps,Pref_opt);
 g=@(t,x,y) algebraic_eqs_lk_perm(t,x,y,ps);
 
 %% Checkpoint
