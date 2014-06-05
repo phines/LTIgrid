@@ -24,7 +24,7 @@ if delta_Pc_dot>0
     delta_Pc_dot_lim_vec = delta_Pc_dot_lim_vec(b:c);
     delta_Pc_dot_lim     = spline(delta_Pc_vec,delta_Pc_dot_lim_vec,delta_Pc);
     Jacb_scale_omega     = 1+(1./(1+exp(-C.*(delta_Pc-M))));
-    %Jacb_scale_Pc        = (-C*exp(-C*(delta_Pc_vec-M))*()))/((1+exp(-C*(delta_Pc_vec-M)))^2)
+    Jacb_scale_Pc        = (C*exp(-C*(delta_Pc-M))*-delta_Pc_dot)/((1+exp(-C*(delta_Pc-M))).^2);
     Jacb_scale_theta     = 1+(-1./(1+exp(-C.*(delta_Pc-M))));
 elseif delta_Pc_dot<0
     %delta_Pc=-110:.01:10;
@@ -41,7 +41,7 @@ elseif delta_Pc_dot<0
     delta_Pc_dot_lim_vec = delta_Pc_dot_lim_vec(b:c);
     delta_Pc_dot_lim     = spline(delta_Pc_vec,delta_Pc_dot_lim_vec,delta_Pc);
     Jacb_scale_omega     = 1./(1+exp(-C.*(delta_Pc-M)));
-    %Jacb_scale_Pc        = (-C*exp(-C*(delta_Pc_vec-M))*()))/((1+exp(-C*(delta_Pc_vec-M)))^2)
+    Jacb_scale_Pc        = (-C*exp(-C*(delta_Pc-M))*-delta_Pc_dot)/((1+exp(-C*(delta_Pc-M))).^2);
     Jacb_scale_theta     = 1./(1+exp(-C.*(delta_Pc-M)));
 end
 end

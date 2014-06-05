@@ -104,7 +104,7 @@ for i=1:nA
 %     sum_Pmax_area=sum(Pmax_area);
 %     delta_Pc_dot_per_gen(gen_areas==i) = area_delta_Pc_dot*Pmax_area/sum_Pmax_area;
 end
-% if t>17
+% if t>20
 % keyboard
 % end
 
@@ -172,7 +172,12 @@ if nargout>1
     % dFPcdot_dPc
     df_dx = df_dx + sparse(ix.f.Pc_dot,ix.x.delta_Pc,dPcdotlim_dPcdotPc,ix.nx,ix.nx);
 end
+if t>16
+    clc
+    sparse(ix.f.Pc_dot,ix.x.delta_Pc,dPcdotlim_dPcdotPc,ix.nx,ix.nx)
+    keyboard
 
+end
 % output df_dy if requested
 if nargout>2
     % build df_dy (change in f wrt the algebraic variables)

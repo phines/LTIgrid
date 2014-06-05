@@ -1,0 +1,15 @@
+clc
+clear all
+
+Reg_up=0.01;
+Reg_down =-0.01; 
+for i=1:10
+delta_Pc_dot = 0%randn(1)*0.01; 
+delta_Pc_check =0%randn(1)*0.01; 
+check = @(delta_Pc_check)Pcsplinetrial_V3(delta_Pc_check, delta_Pc_dot,Reg_up,Reg_down);
+
+n_errs = checkDerivatives2(check,[],delta_Pc_check);
+if n_errs>0
+    keyboard
+end
+end

@@ -20,10 +20,10 @@ x2=-100:.1:-80 %increase x so it actually plots the whole thing
 %y2=(1./(1+exp(a*(x2/scalex-c))))-1;
 y2=abs(delta_Pc_dot)*((1./(1+exp(a/scalex*((x2-Reg_down)-c*scalex))))-1);
 figure(1);clf;
-subplot(3,1,1);hold on;
+% subplot(3,1,1);hold on;
+% plot(x,y,'b')
+% plot(x2,y2,'g')
+% subplot(3,1,2)
 plot(x,y,'b')
-plot(x2,y2,'g')
-subplot(3,1,2)
-plot(x,y,'b')
-subplot(3,1,3)
-plot(x2,y2,'g')
+% subplot(3,1,3)
+% plot(x2,y2,'g')

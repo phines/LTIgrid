@@ -1,0 +1,40 @@
+
+global Pcdotlim_Ru_spline dPcdotlim_dPc_upsp dPcdotlim_dPcdot_upsp Pcdotlim_Rd_spline dPcdotlim_dPc_downsp dPcdotlim_dPcdot_downsp
+
+
+Regup=0.01;
+Regdown=-0.01;
+
+[Pcdotlim_Ru_spline,dPcdotlim_dPc_upsp,dPcdotlim_dPcdot_upsp] = Pcdotlim_upspline(Regup);
+[Pcdotlim_Rd_spline,dPcdotlim_dPc_downsp,dPcdotlim_dPcdot_downsp] = Pcdotlim_downspline(Regdown);
+
+
+[delta_Pc,delta_Pc_dot]=meshgrid(-.02:.0000025:.02,-.02:.001:.02);
+
+delta_Pc_dot_lim = zeros(size(delta_Pc));
+nx = size(delta_Pc,1);
+ny = size(delta_Pc,2);
+
+count=1;
+for i=1:nx
+    for j=1:ny
+        delta_Pc_curr=delta_Pc(i,j);
+        delta_Pc_dot_curr=delta_Pc_dot(i,j);
+        delta_Pc_dot_lim_curr = Pcsplinetrial_V4(delta_Pc(i,j),delta_Pc_dot(i,j),Regup,Regdown);
+        
+        delta_Pc_dot_lim(i,j) = delta_Pc_dot_lim_curr;
+        
+        count=count+1;
+        if mod(count,100000)==0
+            disp(count);
+        end
+        
+    end
+end
+
+%%
+figure
+mesh(delta_Pc,delta_Pc_dot,delta_Pc_dot_lim)
+xlabel('deltaPc')
+ylabel('deltaPcdot')
+zlabel('deltaPcdotlim')
