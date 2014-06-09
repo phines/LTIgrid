@@ -2,8 +2,8 @@
 global Pcdotlim_Ru_spline dPcdotlim_dPc_upsp dPcdotlim_dPcdot_upsp Pcdotlim_Rd_spline dPcdotlim_dPc_downsp dPcdotlim_dPcdot_downsp
 
 
-Regup=0.01;
-Regdown=-0.01;
+Regup=[0.01;0.0102]
+Regdown=[-0.01;-0.0103]
 
 [Pcdotlim_Ru_spline,dPcdotlim_dPc_upsp,dPcdotlim_dPcdot_upsp] = Pcdotlim_upspline(Regup);
 [Pcdotlim_Rd_spline,dPcdotlim_dPc_downsp,dPcdotlim_dPcdot_downsp] = Pcdotlim_downspline(Regdown);

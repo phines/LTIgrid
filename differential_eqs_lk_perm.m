@@ -109,7 +109,7 @@ end
 % end
 
 
-[delta_Pc_dot_per_gen_lim,dPcdotlim_dPcdotomega,dPcdotlim_dPcdotPc,dPcdotlim_dPcdottheta] = Pcsplinetrial_V3( delta_Pc,delta_Pc_dot_per_gen,reg_up,reg_down);
+[delta_Pc_dot_per_gen_lim,dPcdotlim_dPc,dPcdotlim_dPcdot] = Pcsplinetrial_V4( delta_Pc,delta_Pc_dot_per_gen,reg_up,reg_down);
 % for i =1:length(delta_Pc)
 %     %if delta_Pc(i)-delta_Pc_lim(i)~=0
 %     if abs(delta_Pc(i)-delta_Pc_lim(i))>0.0001 %determine whether limit is being enacted
@@ -149,8 +149,8 @@ if nargout>1
 %         keyboard
 %     end
 %     
-    [dFPc_domega_values,dFPc_domega_cols,dFPc_domega_rows] = get_dFPc_domega_libby(ps,dPcdotlim_dPcdotomega);
-    dFPc_domega_values=dFPc_domega_values;%.*dPcdotlim_dPcdot;
+    [dFPc_domega_values,dFPc_domega_cols,dFPc_domega_rows] = get_dFPc_domega_libby(ps);
+    dFPc_domega_values=dFPc_domega_values.*dPcdotlim_dPcdot;
     % build df_dx
     df_dx = sparse(ix.nx,ix.nx);
     % dFswing_ddelta
@@ -170,7 +170,7 @@ if nargout>1
     % dFPmdot_domega_values
     df_dx = df_dx + sparse(ix.f.Pm_dot,ix.x.omega_pu,dFPm_domega_values,ix.nx,ix.nx);
     % dFPcdot_dPc
-    df_dx = df_dx + sparse(ix.f.Pc_dot,ix.x.delta_Pc,dPcdotlim_dPcdotPc,ix.nx,ix.nx);
+    df_dx = df_dx + sparse(ix.f.Pc_dot,ix.x.delta_Pc,dPcdotlim_dPc,ix.nx,ix.nx);
 end
 
 % output df_dy if requested
@@ -181,7 +181,7 @@ if nargout>2
     cols = ix.y.theta(mac_bus_i);
     df_dy = sparse(ix.f.swing,cols,-dPg_dtheta./M,ix.nx,ix.ny);
         % dFPc_dtheta
-    df_dy = get_dPcdot_dtheta(ps,df_dy,dPcdotlim_dPcdottheta);
+    df_dy = get_dPcdot_dtheta(ps,df_dy,dPcdotlim_dPcdot);
        % df_dy = get_dFPc_dtheta_Libby(ps,df_dy);
     
 end

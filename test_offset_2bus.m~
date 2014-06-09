@@ -68,7 +68,7 @@ for j=1:length(k)
         end
         
         
-        %        Pgs_sbs_all = [Pgs_sbs_all,Pgs_sbs(:,1)];
+        % Pgs_sbs_all = [Pgs_sbs_all,Pgs_sbs(:,1)];
         % Set limits for Diffeq Limiter
         ps.gen(:,C.ge.reg_ramp_up)   = Rgs_sbs(:,1);
         ps.gen(:,C.ge.reg_ramp_down) = -Rgs_sbs(:,1);

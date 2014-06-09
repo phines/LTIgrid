@@ -15,8 +15,7 @@ else
 end
 
 [n_rows,n_cols] = size(dg_dx);
-%disp('-----------------------------------------------');
-%disp('  Row   Col  Analytical  Numerical  Difference');
+
 for j = 1:n_cols
     x1 = x;
     x2 = x;
@@ -30,23 +29,22 @@ for j = 1:n_cols
     err_mag(nz) = err(nz) ./ max(abs(dg_dx_j_num(nz)),abs(dg_dx_j_ana(nz)));
     problem_i = find( err_mag > eps2 );
     worst_err = max(worst_err,max(abs(err_mag)));
+
     for i=problem_i'
-        disp('-----------------------------------------------');
-        disp('  Row   Col  Analytical  Numerical  Difference');
-        fprintf('%5d %5d %10g %10g %10g\n',i,j,full(dg_dx_j_ana(i)),dg_dx_j_num(i),err(i));
-        disp('-----------------------------------------------');
-        fprintf('Found %d suspicious derivatives\n',n_errs);
-        fprintf('Worst error magnitude: %e\n',worst_err);
-        disp('-----------------------------------------------');
+       
         n_errs = n_errs + 1;
     end
-end
-%disp('-----------------------------------------------');
-%fprintf('Found %d suspicious derivatives\n',n_errs);
-%fprintf('Worst error magnitude: %e\n',worst_err);
-%disp('-----------------------------------------------');
-if n_errs>0
 
+end
+
+if n_errs>0
+    disp('-----------------------------------------------');
+    disp('  Row   Col  Analytical  Numerical  Difference');
+    fprintf('%5d %5d %10g %10g %10g\n',i,j,full(dg_dx_j_ana(i)),dg_dx_j_num(i),err(i));
+    disp('-----------------------------------------------');
+    fprintf('Found %d suspicious derivatives\n',n_errs);
+    fprintf('Worst error magnitude: %e\n',worst_err);
+    disp('-----------------------------------------------');
     keyboard
 end
 

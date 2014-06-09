@@ -19,9 +19,9 @@ for i=1:nmacs
             
         elseif delta_Pc(i) >= Reg_down(i) && delta_Pc(i) < Reg_down(i)*.99
             
-            delta_Pc_dot_lim_curr = delta_Pc_dot*ppval(Pcdotlim_Rd_spline,delta_Pc); 
-            dPcdotlim_dPc_curr    = delta_Pc_dot*ppval(dPcdotlim_dPc_downsp,delta_Pc);
-            dPcdotlim_dPcdot_curr = ppval(dPcdotlim_dPcdot_downsp,delta_Pc);
+            delta_Pc_dot_lim_curr = delta_Pc_dot(i)*ppval(Pcdotlim_Rd_spline(i),delta_Pc(i)); 
+            dPcdotlim_dPc_curr    = delta_Pc_dot(i)*ppval(dPcdotlim_dPc_downsp(i),delta_Pc(i));
+            dPcdotlim_dPcdot_curr = ppval(dPcdotlim_dPcdot_downsp(i),delta_Pc(i));
             
             delta_Pc_dot_lim(i)   = delta_Pc_dot_lim_curr;
             dPcdotlim_dPcdot(i)   = dPcdotlim_dPcdot_curr;
@@ -43,9 +43,9 @@ for i=1:nmacs
             
             
         elseif delta_Pc(i) <= Reg_up(i) && delta_Pc(i) > Reg_up(i)*0.99
-            delta_Pc_dot_lim_curr = delta_Pc_dot*ppval(Pcdotlim_Ru_spline,delta_Pc);
-            dPcdotlim_dPc_curr    = delta_Pc_dot*ppval(dPcdotlim_dPc_upsp,delta_Pc);
-            dPcdotlim_dPcdot_curr = ppval(dPcdotlim_dPcdot_upsp,delta_Pc);
+            delta_Pc_dot_lim_curr = delta_Pc_dot(i)*ppval(Pcdotlim_Ru_spline(i),delta_Pc(i));
+            dPcdotlim_dPc_curr    = delta_Pc_dot(i)*ppval(dPcdotlim_dPc_upsp(i),delta_Pc(i));
+            dPcdotlim_dPcdot_curr = ppval(dPcdotlim_dPcdot_upsp(i),delta_Pc(i));
             
             delta_Pc_dot_lim(i)   = delta_Pc_dot_lim_curr;
             dPcdotlim_dPcdot(i)   = dPcdotlim_dPcdot_curr;

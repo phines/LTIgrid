@@ -1,4 +1,4 @@
-function [ delta_Pc_dot_lim_sp ] = Pcdotlim_downspline( Rd )
+function [ delta_Pc_dot_lim_sp,dPcdotlim_dPc_sp,dPcdotlim_dPcdot_sp ] = Pcdotlim_downspline( Rd_vec )
 %Forms a cubic spline which drops from 1 down to 0 to be used to smoothly
 %limit Pcdot
 
